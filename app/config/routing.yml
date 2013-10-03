@@ -1,0 +1,5 @@
+build_delivery:
+    resource: "@BuildDeliveryBundle/Controller/"
+    type:     annotation
+    prefix:   /
+

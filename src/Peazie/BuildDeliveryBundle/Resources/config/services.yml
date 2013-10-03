@@ -1,0 +1,8 @@
+services:
+    build_delivery.http.client.jenkins:
+        class:  Guzzle\Http\Client
+        arguments: [ %jenkins_url% ]
+    cache:
+        class: Memcached
+        calls:
+            - [ addServers, [ %memcached.servers% ]]
