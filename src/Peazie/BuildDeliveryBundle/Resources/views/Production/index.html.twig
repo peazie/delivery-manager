@@ -1,0 +1,40 @@
+{% extends 'BuildDeliveryBundle::default.html.twig' %}
+
+{% block content %}
+<!-- Begin page content -->
+<div class="container">
+
+    <div class="page-header">
+        <h1>Build Delivery</h1>
+    </div>
+
+    <div class="row">
+        <div class="panel panel-success">
+            <div class="panel-heading">
+                <b>Available ELBs</b>
+            </div>
+
+            <div class="panel-body">
+                <table class="table">
+                <thead>
+                    <tr>
+                        <th>ELB Nameth>
+                        <th>Deploy to</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for lb in data %}
+                    <tr>
+                        <td>{{ lb.LoadBalancerName }}</td>
+                        <td></td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+                </table>
+            </div>
+        </div>
+    </div><!-- row -->
+
+</div><!-- container -->
+
+{% endblock %}
