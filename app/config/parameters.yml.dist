@@ -1,23 +1,29 @@
+# This file is auto-generated during the composer install
 parameters:
-    database_driver:   pdo_mysql
-    database_host:     127.0.0.1
-    database_port:     ~
-    database_name:     symfony
-    database_user:     root
-    database_password: ~
+    database_driver: pdo_mysql
+    database_host: 127.0.0.1
+    database_port: null
+    database_name: symfony
+    database_user: root
+    database_password: null
+    mailer_transport: smtp
+    mailer_host: 127.0.0.1
+    mailer_user: null
+    mailer_password: null
+    locale: en
+    secret: ThisTokenIsNotSoSecretChangeIt
 
-    mailer_transport:  smtp
-    mailer_host:       127.0.0.1
-    mailer_user:       ~
-    mailer_password:   ~
-
-    locale:            en
-    secret:            ThisTokenIsNotSoSecretChangeIt
+    aws:
+	access_key_id: ABCDE
+	access_key_secret: abcde
+	default_region: us-west-1
 
     jenkins:
-        user         : deployinator
-        password     : 12345
-        token        : 12345
-        base_url     : jenkins.example.com
-        port         : 8000
-        build_name   : Production
+	user: deployinator
+	password: 1234
+	token: 1234
+	base_url: http://jenkins.example.com
+	build_name: Production
+
+    memcached.servers:
+      - { host: 127.0.0.1, port: 11211 }

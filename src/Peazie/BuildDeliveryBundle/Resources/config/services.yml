@@ -1,8 +1,11 @@
 services:
-    build_delivery.http.client.jenkins:
+    twig.extension.text:
+	class: Twig_Extensions_Extension_Text
+	tags:
+	    - { name: twig.extension }
+    delivery.http.client:
         class:  Guzzle\Http\Client
-        arguments: [ %jenkins_url% ]
-    cache:
+    delivery.cache:
         class: Memcached
         calls:
             - [ addServers, [ %memcached.servers% ]]
