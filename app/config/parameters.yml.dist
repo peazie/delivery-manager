@@ -14,16 +14,16 @@ parameters:
     secret: ThisTokenIsNotSoSecretChangeIt
 
     aws:
-	access_key_id: ABCDE
-	access_key_secret: abcde
-	default_region: us-west-1
+        access_key_id: ABCDE
+        access_key_secret: abcde
+        default_region: us-west-1
 
-    jenkins:
-	user: deployinator
-	password: 1234
-	token: 1234
-	base_url: http://jenkins.example.com
-	build_name: Production
+    jenkins: 
+        user: deployinator
+        password: 1234
+        token: 1234
+        base_url: http://jenkins.example.com
+        build_name: Production
 
     memcached.servers:
       - { host: 127.0.0.1, port: 11211 }

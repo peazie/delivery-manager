@@ -1,8 +1,8 @@
 services:
     twig.extension.text:
-	class: Twig_Extensions_Extension_Text
-	tags:
-	    - { name: twig.extension }
+        class: Twig_Extensions_Extension_Text
+        tags:
+            - { name: twig.extension }
     delivery.http.client:
         class:  Guzzle\Http\Client
     delivery.cache:
