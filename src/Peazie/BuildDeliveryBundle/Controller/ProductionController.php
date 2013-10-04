@@ -38,12 +38,27 @@ class ProductionController extends Controller
             $data[] = $row;
         }
 
-        //print '<pre>'; print_r($data); die;
-
         return array( 
             'data' => $data
         );
     }//index
+
+    /**
+     * @Route("/deploy/{strategy}/{elb}", name="prod_deploy", defaults={ "strategy":null, "elb":null })
+     * @Template()
+     */
+    public function deployAction($strategy, $elb) 
+    {
+        if( is_null($strategy) || is_null($elb) ) {
+            throw new \Exception('Required parameters cannot be null');
+        }
+
+        $data['LoadBalancerName' ] = $elb;
+        $data['DeployStrategy']    = $strategy;
+
+        return array( 'data' => $data );
+
+    }//deploy
 
 
     protected function getElbs() {

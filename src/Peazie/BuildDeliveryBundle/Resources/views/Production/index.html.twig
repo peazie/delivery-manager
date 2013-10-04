@@ -5,7 +5,7 @@
 <div class="container">
 
     <div class="page-header">
-        <h1>Production Standing</h1>
+        <h2><span class="glyphicon glyphicon-cloud"></span> Production Standing</h2>
     </div>
 
     <div class="row">
@@ -50,7 +50,7 @@
                                     <span class="caret"></span>
                                 </button>
                                 <ul class="dropdown-menu" role="menu">
-                                    <li><a href="#" class="link-deploy" data-elb="{{ lb.LoadBalancerName }}" data-strategy="cloned">Cloned Instances</a></li>
+                                    <li><a href="#" class="link-deploy" data-elb="{{ lb.LoadBalancerName }}" data-strategy="clone">Cloned Instances</a></li>
                                     <li><a href="#" class="link-deploy" data-elb="{{ lb.LoadBalancerName }}" data-strategy="build">New Build</a></li>
                                 </ul>
                             </div>
@@ -80,42 +80,44 @@
 {% raw %}
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-        <h4 class="modal-title">Deploy Strategy</h4>
+        <h3 class="modal-title">
+            <span class="glyphicon glyphicon-cloud-upload"></span> Deployment Confirmation
+        </h3>
     </div>
 
-    <div class="modal-body">
-        <table class="table">
-        <tr>
-            <th>Target</th>
-            <td>{{loadBalancer}}</td>
-        </tr>
-        <tr>
-            <th>Strategy</th>
-            <td><span class="text-info">{{deployStrategy}}</span></td>
-        </tr>
-        </table>
+    <div class="modal-body" style="text-align: center">
+        <p>You are about to <strong class="text-info">deploy new {{deployStrategy}} to {{loadBalancer}}</strong>. 
+        Confirm this action?</p>
+
+        <a href="{{ deployLink }}" class="btn btn-primary" id="link-deploy-proceed">
+            <span class="glyphicon glyphicon-thumbs-up"></span> Yes Please!
+        </a>
     </div>
 
     <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Next</button>
+        <a href="#" class="btn btn-link" data-dismiss="modal">Cancel</a>
     </div>
 {% endraw %}
 </script>
 
 <script>
+var deploy_link = "{{ path('prod_deploy') }}";
+var data = {};
+
 $('.link-deploy').click( function() {
-    var data = {
-        loadBalancer  : $(this).attr('data-elb'),
-        deployStrategy: $(this).attr('data-strategy')
+    var elb_name = $(this).attr('data-elb');
+    var strategy = $(this).attr('data-strategy');
+
+    data = {
+        loadBalancer  : elb_name,
+        deployStrategy: strategy,
+        deployLink    : deploy_link + '/' + strategy + '/' + elb_name
     };
 
     var output = Mustache.to_html( $('#deploy-dialog-content').html(), data )
 
     $('#myModal .modal-content').html(output);
     $('#myModal').modal('toggle')
-
-    console.log(data);
 });
 </script>
 {% endblock javascript %}

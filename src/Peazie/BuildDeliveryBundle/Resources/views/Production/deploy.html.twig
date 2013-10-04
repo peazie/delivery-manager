@@ -1,0 +1,48 @@
+{% extends 'BuildDeliveryBundle::default.html.twig' %}
+
+{% block content %}
+<!-- Begin page content -->
+<div class="container">
+
+    <div class="page-header">
+        <h2><span class="glyphicon glyphicon-cloud-upload"></span> 
+            Deployment to <span class="label label-danger">{{ data.LoadBalancerName }}</span></h2>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+        <form role="form">
+            <div class="form-group">
+                <label for="strategyField">Deployment Strategy</label>
+                <input type="text" class="form-control" id="strategyField" value="{{ data.DeployStrategy }}" disabled>
+            </div>
+
+            <div class="form-group">
+                <label for="instanceTypeField">Instance Type</label>
+                <input type="text" class="form-control" id="instanceTypeField" value="m1.medium">
+            </div>
+            <div class="form-group">
+                <label for="instanceNumberField">Number of Instances</label>
+                <input type="number" class="form-control" id="instanceNumberField" value="2">
+            </div>
+
+            <div class="form-group">
+                <label for="authorizationKeyField">Authorization Key</label>
+                <input type="password" class="form-control" id="authorizationKeyField" placeholder="something">
+            </div>
+
+            <div class="checkbox">
+                <label class="text-muted">
+                <input type="checkbox"> Check this checkbox if you understand that if you deploy the wrong shit, you'll quite likely be fired and there's no one to blame but yourself.
+                </label>
+            </div>
+
+            <button type="submit" id="do-it" class="btn btn-danger">Let's Do it</button> </form>
+        </div><!-- col -->
+    </div><!-- row -->
+
+</div><!-- container -->
+{% endblock content %}
+
+{% block javascript %}
+{% endblock javascript %}
