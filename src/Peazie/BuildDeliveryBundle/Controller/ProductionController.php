@@ -16,65 +16,111 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
  */
 class ProductionController extends Controller
 {
+
+    private $aws;
+    private $aws_services = array();
+
     /**
      * @Route("/", name="prod_index")
      * @Template()
      */
     public function indexAction(Request $r)
     {
+        $elbs = static::getElbs();
 
-        $data = static::getElbs();
+        foreach( $elbs as $lb ) {
+            $instances  = static::getElbInstances($lb);
+
+            $row = array();
+            $row['LoadBalancerName'] = $lb;
+            $row['Instances'] = $instances['InstanceStates'];
+
+            $data[] = $row;
+        }
+
+        //print '<pre>'; print_r($data); die;
 
         return array( 
-            'data' => $data['LoadBalancerDescriptions']
+            'data' => $data
         );
     }//index
 
+
     protected function getElbs() {
-        $cache = $this->get('delivery.cache');
+        $params = $this->container->getParameter('aws');
+        return $params['available_elbs'];
+    }//getElbs
 
-        if( !$data = $cache->get('elbs-list') ) {
+
+    protected function getElbDetails($elb_names = null) 
+    {
+        if( empty($elb_names) || !is_array($elb_names) ) {
+            $elb_config = $elb_names;
+        } else {
             $params = $this->container->getParameter('aws');
+            $elb_config = $params['available_elbs'];
+        }
 
-            $aws = Aws::factory(array(
-                'key'    => $params['access_key_id'],
-                'secret' => $params['access_key_secret'],
-                'region' => $params['default_region']
-            ));
-
-            $elb  = $aws->get('elasticloadbalancing');
-            $elbs = $elb->describeLoadBalancers();
+        $cache = $this->get('delivery.cache');
+        if( !$data = $cache->get('elbs-list') ) {
+            $elb  = static::getAwsService('elasticloadbalancing');
+            $elbs = $elb->describeLoadBalancers(array('LoadBalancerNames' => $elb_config));
             $data = $elbs->toArray();
             $cache->set( 'elbs-list', $data, 30*60 );
         }
 
         return $data;
-    }
+    }//getElbDetails
 
 
-    protected function getElbInstances($config = null) {
-        if( !$config ) {
+    protected function getElbInstances($elb_name = null) {
+        if( empty($elb_name) ) {
             throw new \Exception("No configuration supplied. Please try again");
         }
 
         $cache = $this->get('delivery.cache');
 
-        if( !$data = $cache->get('elbs-list') ) {
+        if( !$data = $cache->get('elb-instances-' . $elb_name ) ) {
             $params = $this->container->getParameter('aws');
 
-            $aws = Aws::factory(array(
+            $elb  = static::getAwsService('elasticloadbalancing');
+            $instances = $elb->describeInstanceHealth(array( 'LoadBalancerName' => (string) $elb_name ) );
+
+            $data = $instances->toArray();
+            $cache->set( 'elb-instances-' . $elb_name, $data, 30*30 );
+        }
+
+        return $data;
+    }//getElbInstances
+
+
+    protected function getAws()
+    {
+        if( !$this->aws ) {
+            $params = $this->container->getParameter('aws');
+            $this->aws = Aws::factory(array(
                 'key'    => $params['access_key_id'],
                 'secret' => $params['access_key_secret'],
                 'region' => $params['default_region']
             ));
-
-            $elb  = $aws->get('elasticloadbalancing');
-            $elbs = $elb->describeLoadBalancers();
-            $data = $elbs->toArray();
-            $cache->set( 'elbs-list', $data, 30*60 );
         }
 
-        return $data;
-    }
+        return $this->aws;
+    }//getAws
 
-}
+
+    protected function getAwsService($service=null)
+    {
+        if( empty($service) ) {
+            throw new \Exception('No services defined!');
+        }
+
+        if( empty($this->aws_services[$service]) ) {
+            $aws = static::getAws();
+            $this->aws_services[$service] = $aws->get($service);
+        }
+
+        return $this->aws_services[$service];
+    }//getAwsService
+
+}//ProductionController

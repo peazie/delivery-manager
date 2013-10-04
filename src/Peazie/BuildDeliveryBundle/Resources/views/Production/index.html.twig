@@ -9,7 +9,7 @@
     </div>
 
     <div class="row">
-        <div class="panel panel-success">
+        <div class="panel panel-default">
             <div class="panel-heading">
                 <b>Available ELBs</b>
             </div>
@@ -20,7 +20,6 @@
                     <tr>
                         <th>ELB Name</th>
                         <th>Instances</th>
-                        <th>AZs</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -30,16 +29,31 @@
                         <td>{{ lb.LoadBalancerName }}</td>
                         <td>
                             {% for i in lb.Instances %}
-                                <a href="#" class="label label-primary">{{ i.InstanceId }}</a>
+                                {% if i.State == 'InService' %}
+                                    <a href="#" class="label label-success">{{ i.InstanceId }}</a>
+                                {% else %}
+                                    <a href="#" class="label label-danger">{{ i.InstanceId }}</a>
+                                {% endif %}
                             {% endfor %}
                         </td>
+                        {#
                         <td>
                             {% for a in lb.AvailabilityZones %}
                                 <a href="#" class="label label-warning">{{ a }}</a>
                             {% endfor %}
                         </td>
+                        #}
                         <td>
-                            <a href="#" class="btn btn-default btn-sm">Deploy</a>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-danger btn-sm">Deploy</button>
+                                <button type="button" class="btn btn-danger btn-sm dropdown-toggle" data-toggle="dropdown">
+                                    <span class="caret"></span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="#" class="link-deploy" data-elb="{{ lb.LoadBalancerName }}" data-strategy="cloned">Cloned Instances</a></li>
+                                    <li><a href="#" class="link-deploy" data-elb="{{ lb.LoadBalancerName }}" data-strategy="build">New Build</a></li>
+                                </ul>
+                            </div>
                         </td>
                     </tr>
                 {% endfor %}
@@ -51,4 +65,57 @@
 
 </div><!-- container -->
 
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+    <div class="modal-content">
+        <!-- content here -->
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
 {% endblock %}
+
+{% block javascript %}
+<script id="deploy-dialog-content" type="text/html">
+{% raw %}
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Deploy Strategy</h4>
+    </div>
+
+    <div class="modal-body">
+        <table class="table">
+        <tr>
+            <th>Target</th>
+            <td>{{loadBalancer}}</td>
+        </tr>
+        <tr>
+            <th>Strategy</th>
+            <td><span class="text-info">{{deployStrategy}}</span></td>
+        </tr>
+        </table>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Next</button>
+    </div>
+{% endraw %}
+</script>
+
+<script>
+$('.link-deploy').click( function() {
+    var data = {
+        loadBalancer  : $(this).attr('data-elb'),
+        deployStrategy: $(this).attr('data-strategy')
+    };
+
+    var output = Mustache.to_html( $('#deploy-dialog-content').html(), data )
+
+    $('#myModal .modal-content').html(output);
+    $('#myModal').modal('toggle')
+
+    console.log(data);
+});
+</script>
+{% endblock javascript %}
