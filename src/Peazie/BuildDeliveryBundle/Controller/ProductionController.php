@@ -23,11 +23,11 @@ class ProductionController extends Controller
     public function indexAction(Request $r)
     {
 
-	$data = static::getElbs();
+        $data = static::getElbs();
 
-	return array(
-	    'data' => $data['LoadBalancerDescriptions']
-	);
+        return array( 
+            'data' => $data['LoadBalancerDescriptions']
+        );
     }//index
 
     protected function getElbs() {
@@ -48,33 +48,33 @@ class ProductionController extends Controller
             $cache->set( 'elbs-list', $data, 30*60 );
         }
 
-	return $data;
+        return $data;
     }
 
 
     protected function getElbInstances($config = null) {
-	if( !$config ) {
-	    throw new \Exception("No configuration supplied. Please try again");
-	}
+        if( !$config ) {
+            throw new \Exception("No configuration supplied. Please try again");
+        }
 
-	$cache = $this->get('delivery.cache');
+        $cache = $this->get('delivery.cache');
 
-	if( !$data = $cache->get('elbs-list') ) {
-	    $params = $this->container->getParameter('aws');
+        if( !$data = $cache->get('elbs-list') ) {
+            $params = $this->container->getParameter('aws');
 
-	    $aws = Aws::factory(array(
-		'key'    => $params['access_key_id'],
-		'secret' => $params['access_key_secret'],
-		'region' => $params['default_region']
-	    ));
+            $aws = Aws::factory(array(
+                'key'    => $params['access_key_id'],
+                'secret' => $params['access_key_secret'],
+                'region' => $params['default_region']
+            ));
 
-	    $elb  = $aws->get('elasticloadbalancing');
-	    $elbs = $elb->describeLoadBalancers();
-	    $data = $elbs->toArray();
-	    $cache->set( 'elbs-list', $data, 30*60 );
-	}
+            $elb  = $aws->get('elasticloadbalancing');
+            $elbs = $elb->describeLoadBalancers();
+            $data = $elbs->toArray();
+            $cache->set( 'elbs-list', $data, 30*60 );
+        }
 
-	return $data;
+        return $data;
     }
 
 }

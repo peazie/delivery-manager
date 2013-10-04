@@ -5,7 +5,7 @@
 <div class="container">
 
     <div class="page-header">
-	<h1>Production Standing</h1>
+        <h1>Production Standing</h1>
     </div>
 
     <div class="row">
@@ -18,29 +18,29 @@
                 <table class="table">
                 <thead>
                     <tr>
-			<th>ELB Name</th>
-			<th>Instances</th>
-			<th>AZs</th>
-			<th>Actions</th>
+                        <th>ELB Name</th>
+                        <th>Instances</th>
+                        <th>AZs</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                 {% for lb in data %}
                     <tr>
                         <td>{{ lb.LoadBalancerName }}</td>
-			<td>
-			    {% for i in lb.Instances %}
-				<a href="#" class="label label-primary">{{ i.InstanceId }}</a>
-			    {% endfor %}
-			</td>
-			<td>
-			    {% for a in lb.AvailabilityZones %}
-				<a href="#" class="label label-warning">{{ a }}</a>
-			    {% endfor %}
-			</td>
-			<td>
-			    <a href="#" class="btn btn-default btn-sm">Deploy</a>
-			</td>
+                        <td>
+                            {% for i in lb.Instances %}
+                                <a href="#" class="label label-primary">{{ i.InstanceId }}</a>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            {% for a in lb.AvailabilityZones %}
+                                <a href="#" class="label label-warning">{{ a }}</a>
+                            {% endfor %}
+                        </td>
+                        <td>
+                            <a href="#" class="btn btn-default btn-sm">Deploy</a>
+                        </td>
                     </tr>
                 {% endfor %}
                 </tbody>
