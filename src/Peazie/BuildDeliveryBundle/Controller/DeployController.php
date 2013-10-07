@@ -85,7 +85,7 @@ class DeployController extends Controller
         $access_key    = (string) $r->get('aws_key');
         $access_pass   = (string) $r->get('aws_pass');
         
-        $stack_name    = 'peazie-web-' . $jenkins_build . '-' . substr( $hg_revision, 0, 6 );
+        $stack_name    = 'peazie-web-' . $jenkins_build . '-' . substr( $hg_revision, 0, 6 ) . '-' . substr( md5(time() ), 0, 6 );
 
         $stack_config = array(
             'StackName'   => $stack_name,
