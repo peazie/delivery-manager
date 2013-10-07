@@ -78,7 +78,7 @@ class ProductionController extends Controller
 
         $cache = $this->get('delivery.cache');
         if( !$data = $cache->get('elbs-list') ) {
-            $elb  = static::getAwsService('elasticloadbalancing');
+            $elb  = $this->container->get('peazie.helper.aws')->getService('elasticloadbalancing');
             $elbs = $elb->describeLoadBalancers(array('LoadBalancerNames' => $elb_config));
             $data = $elbs->toArray();
             $cache->set( 'elbs-list', $data, 30*60 );
@@ -98,7 +98,7 @@ class ProductionController extends Controller
         if( !$data = $cache->get('elb-instances-' . $elb_name ) ) {
             $params = $this->container->getParameter('aws');
 
-            $elb  = static::getAwsService('elasticloadbalancing');
+            $elb  = $this->container->get('peazie.helper.aws')->getService('elasticloadbalancing');
             $instances = $elb->describeInstanceHealth(array( 'LoadBalancerName' => (string) $elb_name ) );
 
             $data = $instances->toArray();
@@ -127,7 +127,7 @@ class ProductionController extends Controller
 
         if( !$data = $cache->get('instance-detail-' . md5($instance_id) ) ) {
 
-            $ec2       = static::getAwsService('ec2');
+            $ec2       = $this->container->get('peazie.helper.aws')->getService('ec2');
             $instances = $ec2->describeInstances($config);
             $data      = $instances->toArray();
 
@@ -136,35 +136,5 @@ class ProductionController extends Controller
 
         return $data;
     }//getInstanceDetail
-
-
-    protected function getAws()
-    {
-        if( !$this->aws ) {
-            $params = $this->container->getParameter('aws');
-            $this->aws = Aws::factory(array(
-                'key'    => $params['access_key_id'],
-                'secret' => $params['access_key_secret'],
-                'region' => $params['default_region']
-            ));
-        }
-
-        return $this->aws;
-    }//getAws
-
-
-    protected function getAwsService($service=null)
-    {
-        if( empty($service) ) {
-            throw new \Exception('No services defined!');
-        }
-
-        if( empty($this->aws_services[$service]) ) {
-            $aws = static::getAws();
-            $this->aws_services[$service] = $aws->get($service);
-        }
-
-        return $this->aws_services[$service];
-    }//getAwsService
 
 }//ProductionController

@@ -3,9 +3,15 @@ services:
         class: Twig_Extensions_Extension_Text
         tags:
             - { name: twig.extension }
+
     delivery.http.client:
         class:  Guzzle\Http\Client
+
     delivery.cache:
         class: Memcached
         calls:
             - [ addServers, [ %memcached.servers% ]]
+
+    peazie.helper.aws:
+        class: Peazie\BuildDeliveryBundle\Helpers\AwsHelper
+        arguments: [ %aws% ]
