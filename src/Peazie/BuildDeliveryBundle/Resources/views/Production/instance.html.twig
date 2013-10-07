@@ -1,0 +1,88 @@
+{% extends 'BuildDeliveryBundle::default.html.twig' %}
+
+{% block content %}
+<!-- Begin page content -->
+<div class="container">
+    <div class="page-header">
+        <h1><span class="glyphicon glyphicon-hdd"></span> Instance {{ data.InstanceId }}</h1>
+    </div>
+
+    <div class="row">
+
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title">Instance Details</h3>
+            </div>
+
+            <div class="panel-body">
+                <table class="table">
+                <thead>
+                        <tr>
+                            <th width="25%">Key</th>
+                            <th>Value</th>
+                        </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th class="text-info">Instance ID</th>
+                        <td>{{ data.InstanceId }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-info">Instance Type</th>
+                        <td>{{ data.InstanceType }}</td>
+                    </tr>
+
+                    <tr>
+                        <th class="text-info">Public DNS</th>
+                        <td><a href="http://{{ data.PublicDnsName }}" target="_blank" >{{ data.PublicDnsName }}</a></td>
+                    </tr>
+
+                    <tr>
+                        <th class="text-info">KeyPair</th>
+                        <td>{{ data.KeyName }}</td>
+                    </tr>
+                    <tr>
+                        <th class="text-info">Zone</th>
+                        <td>{{ data.Placement.AvailabilityZone }}</td>
+                    </tr>
+   
+                </tbody>
+                </table>
+
+            </div><!-- panel-body -->
+        </div><!-- info panel -->
+
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h3 class="panel-title"><span class="glyphicon glyphicon-tags"></span> Instance Tags</h3>
+            </div>
+
+            <div class="panel-body">
+                <table class="table">
+                <thead>
+                        <tr>
+                            <th width="25%">Key</th>
+                            <th>Value</th>
+                        </tr>
+                </thead>
+                <tbody>
+                {% if data.Tags is iterable %}
+                    {% for t in data.Tags %}
+                    <tr>
+                        <th class="text-info">{{ t.Key }}</th>
+                        <td>{{ t.Value }}</td>
+                    </tr>
+                    {% endfor %}
+                {% endif %}
+                </tbody>
+                </table>
+
+            </div><!-- panel-body -->
+        </div><!-- info panel -->
+
+    </div><!-- row -->
+
+</div><!-- container -->
+{% endblock content %}
+

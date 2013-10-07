@@ -43,22 +43,22 @@ class ProductionController extends Controller
         );
     }//index
 
+
     /**
-     * @Route("/deploy/{strategy}/{elb}", name="prod_deploy", defaults={ "strategy":null, "elb":null })
+     * @Route("/instance/{instance_id}", name="prod_instance_detail", defaults={ "instance_id":null } )
      * @Template()
      */
-    public function deployAction($strategy, $elb) 
+    public function instanceAction($instance_id=null)
     {
-        if( is_null($strategy) || is_null($elb) ) {
-            throw new \Exception('Required parameters cannot be null');
+        if( is_null($instance_id) ) {
+            throw new \Exception("Instance ID is missing. WTF?");
         }
 
-        $data['LoadBalancerName' ] = $elb;
-        $data['DeployStrategy']    = $strategy;
+        $data = static::getInstanceDetail($instance_id);
 
-        return array( 'data' => $data );
+        return array( 'data' => $data['Reservations'][0]['Instances'][0] );
 
-    }//deploy
+    }//instanceDetailAction
 
 
     protected function getElbs() {
@@ -107,6 +107,35 @@ class ProductionController extends Controller
 
         return $data;
     }//getElbInstances
+
+
+    protected function getInstanceDetail($instance_id=null)
+    {
+        if( is_null($instance_id) ) {
+            throw new \Exception("Instance ID is missing. WTF?");
+        }
+
+        if( is_string($instance_id) ) {
+            $config = array( 'InstanceIds' => array($instance_id) );
+        }
+
+        if( is_array( $instance_id) ) {
+            $config = array( 'InstanceIds' => $instance_id );
+        }
+
+        $cache = $this->get('delivery.cache');
+
+        if( !$data = $cache->get('instance-detail-' . md5($instance_id) ) ) {
+
+            $ec2       = static::getAwsService('ec2');
+            $instances = $ec2->describeInstances($config);
+            $data      = $instances->toArray();
+
+            $cache->set( 'instance-detail-' . md5($instance_id), $data, 30*30 );
+        }
+
+        return $data;
+    }//getInstanceDetail
 
 
     protected function getAws()
