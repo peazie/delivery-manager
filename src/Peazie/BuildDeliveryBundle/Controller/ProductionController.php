@@ -26,13 +26,19 @@ class ProductionController extends Controller
      */
     public function indexAction(Request $r)
     {
+        $group_instances = array();
+        $groups = array();
+        $elbs   = array();
+
         $elbs   = static::getElbs();
         $groups = static::getAutoScaleGroups();
 
-        foreach($groups as $glb) {
-            foreach( $glb as $g) {
-                foreach($g['Instances'] as $i) {
-                    $group_instances[] = $i['InstanceId'];
+        if( count($groups) > 0 && is_array($groups ) ) {
+            foreach($groups as $glb) {
+                foreach( $glb as $g) {
+                    foreach($g['Instances'] as $i) {
+                        $group_instances[] = $i['InstanceId'];
+                    }
                 }
             }
         }

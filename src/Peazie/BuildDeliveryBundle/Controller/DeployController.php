@@ -90,7 +90,7 @@ class DeployController extends Controller
             print "You are trying to deply to $deploy_elb"; die;
         }
 
-        $stack_name    = 'peazie-web-' . $jenkins_build . '-' . substr( $hg_revision, 0, 6 ) . '-' . substr( md5(time() ), 0, 6 );
+        $stack_name    = $deploy_elb . '-web-' . $jenkins_build . '-' . substr( $hg_revision, 0, 6 ) . '-' . substr( md5(time() ), 0, 6 );
 
         $stack_config = array(
             'StackName'   => $stack_name,
