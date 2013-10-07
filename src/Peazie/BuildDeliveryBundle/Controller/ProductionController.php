@@ -81,7 +81,7 @@ class ProductionController extends Controller
             $elb  = $this->container->get('peazie.helper.aws')->getService('elasticloadbalancing');
             $elbs = $elb->describeLoadBalancers(array('LoadBalancerNames' => $elb_config));
             $data = $elbs->toArray();
-            $cache->set( 'elbs-list', $data, 30*60 );
+	    $cache->set( 'elbs-list', $data, 60 );
         }
 
         return $data;
@@ -102,7 +102,7 @@ class ProductionController extends Controller
             $instances = $elb->describeInstanceHealth(array( 'LoadBalancerName' => (string) $elb_name ) );
 
             $data = $instances->toArray();
-            $cache->set( 'elb-instances-' . $elb_name, $data, 30*30 );
+	    $cache->set( 'elb-instances-' . $elb_name, $data, 30 );
         }
 
         return $data;
