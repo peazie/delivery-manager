@@ -9,12 +9,28 @@
     </div>
 
     <div class="row">
-    {% for lb in data %}
-        {{ include(
-            'BuildDeliveryBundle:Production:partial.panel.prod-groups.html.twig',
-            { 'loadBalancer': lb }
-        ) }} 
-    {% endfor %}
+
+        <p>Please find Peazie environments below, grouped by each environment's load balancer
+        name. Under each environment group are two main groups of instances:</p>
+
+        <dl class="dl-horizontal" style="margin-bottom: 2.5em;">
+            <dt>Standard Instances</dt>
+            <dd>Standard instances that are launched independently</dd>
+
+            <dt>AutoScale Instances</dt>
+            <dd>As the name implies, these are instances that are part of
+                an autoscale group<dd>
+        </dl>
+
+        {% for lb in data %}
+            <div style="margin-bottom: 3.5em;">
+            {{ include(
+                'BuildDeliveryBundle:Production:partial.panel.prod-groups.html.twig',
+                { 'loadBalancer': lb }
+            ) }} 
+            </div>
+        {% endfor %}
+
     </div><!-- row -->
 
 </div><!-- container -->
@@ -40,7 +56,7 @@
     </div>
 
     <div class="modal-body" style="text-align: center">
-        <p>You are about to <strong class="text-info">deploy new {{deployStrategy}} to {{loadBalancer}}</strong>. 
+        <p>You are about to deploy <strong class="text-info">new {{deployStrategy}}</strong> to <strong class="text-info">{{loadBalancer}}</strong>. 
         Confirm this action?</p>
 
         <a href="{{ deployLink }}" class="btn btn-primary" id="link-deploy-proceed">

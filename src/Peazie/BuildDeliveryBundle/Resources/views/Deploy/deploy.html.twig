@@ -16,6 +16,7 @@
                 <label for="strategyField">Deployment Strategy</label>
                 <input type="text" class="form-control" id="strategyField" value="{{ data.DeployStrategy }}" disabled>
                 <input type="hidden" name="deploy_strategy" value="{{ data.DeployStrategy }}">
+                <input type="hidden" name="deploy_elb" value="{{ data.LoadBalancerName }}">
             </div>
 
             <div class="form-group">

@@ -1,28 +1,22 @@
 <!-- Standard Instances -->
-<div class="panel panel-warning">
+<div class="panel panel-info">
     <div class="panel-heading">
         <h3 class="panel-title">Standard Instances</h3>
     </div>
 
-    <div class="panel-body">
+    <div class="panel-body" style="background-color: #f0f8fc;">
 
-        <table class="table table-bordered">
-        <tbody>
-            <tr>
-                <td>
-                {% if loadBalancer.Instances is defined %}
-                    {% for i in loadBalancer.Instances %}
-                        {% if i.State == 'InService' %}
-                            <a href="{{ path('prod_instance_detail', { 'instance_id': i.InstanceId }) }}" class="label label-success">{{ i.InstanceId }}</a>
-                        {% else %}
-                            <a href="{{ path('prod_instance_detail', { 'instance_id': i.InstanceId }) }}" class="label label-danger">{{ i.InstanceId }}</a>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
-                </td>
-            </tr>
-        </tbody>
-        </table>
+    {% if loadBalancer.Instances is defined %}
+        {% for i in loadBalancer.Instances %}
+            {% if i.State == 'InService' %}
+                <a href="{{ path('prod_instance_detail', { 'instance_id': i.InstanceId }) }}" class="btn btn-success">
+                    <span class="glyphicon glyphicon-ok"></span> {{ i.InstanceId }}</a>
+            {% else %}
+                <a href="{{ path('prod_instance_detail', { 'instance_id': i.InstanceId }) }}" class="btn btn-danger">
+                    <span class="glyphicon glyphicon-warning-sign"></span> {{ i.InstanceId }}</a>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
 
     </div><!-- panel-body -->
 </div><!-- panel-heading -->

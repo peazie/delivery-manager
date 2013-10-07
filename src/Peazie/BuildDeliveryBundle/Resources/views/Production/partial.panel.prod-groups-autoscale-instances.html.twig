@@ -3,30 +3,19 @@
         <h3 class="panel-title">AutoScale: {{ as.AutoScalingGroupName | truncate(30) }}</h3>
     </div>
 
-    <div class="panel-body">
+    <div class="panel-body" style="background-color: #f1faed;">
 
-        <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>AutoScale: {{ as.AutoScalingGroupName }} </th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>
-                {% if as.Instances is defined %}
-                    {% for i in as.Instances %}
-                        {% if i.HealthStatus == 'Healthy' %}
-                            <a href="{{ path('prod_instance_detail', { 'instance_id': i.InstanceId }) }}" class="label label-success">{{ i.InstanceId }}</a>
-                        {% else %}
-                            <a href="{{ path('prod_instance_detail', { 'instance_id': i.InstanceId }) }}" class="label label-danger">{{ i.InstanceId }}</a>
-                        {% endif %}
-                    {% endfor %}
-                {% endif %}
-                </td>
-            </tr>
-        </tbody>
-        </table>
+    {% if as.Instances is defined %}
+        {% for i in as.Instances %}
+            {% if i.HealthStatus == 'Healthy' %}
+                <a href="{{ path('prod_instance_detail', { 'instance_id': i.InstanceId }) }}" class="btn btn-success">
+                    <span class="glyphicon glyphicon-ok"></span> {{ i.InstanceId }}</a>
+            {% else %}
+                <a href="{{ path('prod_instance_detail', { 'instance_id': i.InstanceId }) }}" class="btn btn-danger">
+                    <span class="glyphicon glyphicon-warning-sign"></span> {{ i.InstanceId }}</a>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
 
     </div><!-- panel-body -->
 </div><!-- panel-heading -->

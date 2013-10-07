@@ -78,13 +78,18 @@ class DeployController extends Controller
             return $this->redirect( $this->generateUrl('prod_index') );
         }
 
+        $deploy_elb    = (string) $r->get('deploy_elb');
         $jenkins_build = (int)    $r->get('jenkins_build');
         $hg_revision   = (string) $r->get('hg_rev');
         $instance_type = (string) $r->get('instance_type');
         $instance_num  = (int)    $r->get('instance_number');
         $access_key    = (string) $r->get('aws_key');
         $access_pass   = (string) $r->get('aws_pass');
-        
+
+        if( trim($deploy_elb) == "peazie-prod" ) {
+            print "You are trying to deply to $deploy_elb"; die;
+        }
+
         $stack_name    = 'peazie-web-' . $jenkins_build . '-' . substr( $hg_revision, 0, 6 ) . '-' . substr( md5(time() ), 0, 6 );
 
         $stack_config = array(
@@ -108,6 +113,10 @@ class DeployController extends Controller
                 array(
                     'ParameterKey'   => 'InstanceType',
                     'ParameterValue' => $instance_type,
+                ),
+                array(
+                    'ParameterKey'   => 'ELB',
+                    'ParameterValue' => $deploy_elb,
                 )
             ),
             'Tags' => array(
@@ -134,9 +143,6 @@ class DeployController extends Controller
         $cf = $this->container->get('peazie.helper.aws')->getService('cloudformation');
         $result = $cf->createStack($stack_config);
         $data = array_merge($result->toArray(), $stack_config); 
-
-        //$result['StackId'] = "arn:aws:cloudformation:us-west-1:868034933375:stack/peazie-web-552-4b00e6/9ca54110-2f03-11e3-ae7b-506cf9733096";
-        //$data = array_merge($result, $stack_config); 
 
         return array( 'data' => $data );
     }//cfAction
