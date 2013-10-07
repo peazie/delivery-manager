@@ -1,0 +1,42 @@
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h3 class="panel-title">LB: {{ loadBalancer.LoadBalancerName }}</h3>
+    </div>
+
+    <div class="panel-body">
+
+        <!-- Standard Instances -->
+        {% if loadBalancer.Instances is defined %}
+            {{ include(
+                'BuildDeliveryBundle:Production:partial.panel.prod-groups-standard-instances.html.twig',
+                { 'loadBalancer': loadBalancer }
+            ) }}
+        {% endif %}
+
+        <!-- Autoscale Groups -->
+        {% if loadBalancer.AutoScaleGroups is defined %}
+            {% for as in loadBalancer.AutoScaleGroups %}
+            {{ include(
+                'BuildDeliveryBundle:Production:partial.panel.prod-groups-autoscale-instances.html.twig',
+                { 'asGroup': as }
+            ) }}
+            {% endfor %} 
+        {% endif %}
+
+
+        <!-- deploy button -->
+        <div class="btn-group">
+            <button type="button" class="btn btn-primary btn-xs">Deploy to this environment</button>
+            <button type="button" class="btn btn-primary btn-xs dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+                <li><a href="#" class="link-deploy" data-elb="{{ lb.LoadBalancerName }}" data-strategy="clone">Cloned Instances</a></li>
+                <li><a href="#" class="link-deploy" data-elb="{{ lb.LoadBalancerName }}" data-strategy="build">New Build</a></li>
+            </ul>
+        </div>
+        <!-- deploy button -->
+
+    </div><!-- panel-body -->
+</div><!-- panel -->
+

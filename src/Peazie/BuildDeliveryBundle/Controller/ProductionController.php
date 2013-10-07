@@ -26,14 +26,32 @@ class ProductionController extends Controller
      */
     public function indexAction(Request $r)
     {
-        $elbs = static::getElbs();
+        $elbs   = static::getElbs();
+        $groups = static::getAutoScaleGroups();
+
+        foreach($groups as $glb) {
+            foreach( $glb as $g) {
+                foreach($g['Instances'] as $i) {
+                    $group_instances[] = $i['InstanceId'];
+                }
+            }
+        }
 
         foreach( $elbs as $lb ) {
             $instances  = static::getElbInstances($lb);
 
             $row = array();
             $row['LoadBalancerName'] = $lb;
-            $row['Instances'] = $instances['InstanceStates'];
+
+            foreach( $instances['InstanceStates'] as $i ) {
+                if( !in_array( $i['InstanceId'], $group_instances ) ) {
+                    $row['Instances'][] = $i;
+                }
+            }
+
+            if( !empty($groups[$lb]) && is_array($groups[$lb]) ) {
+                $row['AutoScaleGroups'] = $groups[ $lb ];
+            }
 
             $data[] = $row;
         }
@@ -81,7 +99,7 @@ class ProductionController extends Controller
             $elb  = $this->container->get('peazie.helper.aws')->getService('elasticloadbalancing');
             $elbs = $elb->describeLoadBalancers(array('LoadBalancerNames' => $elb_config));
             $data = $elbs->toArray();
-	    $cache->set( 'elbs-list', $data, 60 );
+            $cache->set( 'elbs-list', $data, 60 );
         }
 
         return $data;
@@ -96,18 +114,34 @@ class ProductionController extends Controller
         $cache = $this->get('delivery.cache');
 
         if( !$data = $cache->get('elb-instances-' . $elb_name ) ) {
-            $params = $this->container->getParameter('aws');
-
             $elb  = $this->container->get('peazie.helper.aws')->getService('elasticloadbalancing');
             $instances = $elb->describeInstanceHealth(array( 'LoadBalancerName' => (string) $elb_name ) );
 
             $data = $instances->toArray();
-	    $cache->set( 'elb-instances-' . $elb_name, $data, 30 );
+            $cache->set( 'elb-instances-' . $elb_name, $data, 30 );
         }
 
         return $data;
     }//getElbInstances
 
+    protected function getAutoScaleGroups() {
+
+        $cache = $this->get('delivery.cache');
+
+        if( !$data = $cache->get( 'autoscale-groups' ) ) {
+            $as     = $this->container->get('peazie.helper.aws')->getService('autoscaling');
+            $groups = $as->DescribeAutoScalingGroups()->toArray();
+
+            foreach( $groups['AutoScalingGroups'] as $g ) {
+                foreach( $g['LoadBalancerNames'] as $l ) {
+                    $data[ $l ][] = $g;
+                }
+            }
+            $cache->set( 'autoscale-groups', $data, 5*60 );
+        }
+
+        return $data;
+    }//getElbInstances
 
     protected function getInstanceDetail($instance_id=null)
     {

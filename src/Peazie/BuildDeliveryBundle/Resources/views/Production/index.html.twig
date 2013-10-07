@@ -9,58 +9,12 @@
     </div>
 
     <div class="row">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <b>Available ELBs</b>
-            </div>
-
-            <div class="panel-body">
-                <table class="table">
-                <thead>
-                    <tr>
-                        <th>ELB Name</th>
-                        <th>Instances</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {% for lb in data %}
-                    <tr>
-                        <td>{{ lb.LoadBalancerName }}</td>
-                        <td>
-                            {% for i in lb.Instances %}
-                                {% if i.State == 'InService' %}
-                                    <a href="{{ path('prod_instance_detail', { 'instance_id': i.InstanceId }) }}" class="label label-success">{{ i.InstanceId }}</a>
-                                {% else %}
-                                    <a href="{{ path('prod_instance_detail', { 'instance_id': i.InstanceId }) }}" class="label label-danger">{{ i.InstanceId }}</a>
-                                {% endif %}
-                            {% endfor %}
-                        </td>
-                        {#
-                        <td>
-                            {% for a in lb.AvailabilityZones %}
-                                <a href="#" class="label label-warning">{{ a }}</a>
-                            {% endfor %}
-                        </td>
-                        #}
-                        <td>
-                            <div class="btn-group">
-                                <button type="button" class="btn btn-danger btn-sm">Deploy</button>
-                                <button type="button" class="btn btn-danger btn-sm dropdown-toggle" data-toggle="dropdown">
-                                    <span class="caret"></span>
-                                </button>
-                                <ul class="dropdown-menu" role="menu">
-                                    <li><a href="#" class="link-deploy" data-elb="{{ lb.LoadBalancerName }}" data-strategy="clone">Cloned Instances</a></li>
-                                    <li><a href="#" class="link-deploy" data-elb="{{ lb.LoadBalancerName }}" data-strategy="build">New Build</a></li>
-                                </ul>
-                            </div>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-                </table>
-            </div>
-        </div>
+    {% for lb in data %}
+        {{ include(
+            'BuildDeliveryBundle:Production:partial.panel.prod-groups.html.twig',
+            { 'loadBalancer': lb }
+        ) }} 
+    {% endfor %}
     </div><!-- row -->
 
 </div><!-- container -->
