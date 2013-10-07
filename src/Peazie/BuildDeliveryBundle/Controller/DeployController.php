@@ -113,7 +113,7 @@ class DeployController extends Controller
             'Tags' => array(
                 array(
                     'Key'   => 'Name',
-                    'Value' => 'autoscale prod ' . $jenkins_build . ' ' . substr( $hg_revision, 0, 4 ),
+                    'Value' => 'autoscale prod ' . $jenkins_build . ' ' . substr( $hg_revision, 0, 6 ),
                 ),
                 array(
                     'Key'   => 'brand',
