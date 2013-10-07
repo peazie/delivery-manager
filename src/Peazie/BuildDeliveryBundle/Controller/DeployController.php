@@ -17,7 +17,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 class DeployController extends Controller
 {
     /**
-     * @Route("/{strategy}/{elb}", name="prod_deploy", defaults={ "strategy":null, "elb":null })
+     * @Route("/{strategy}/{elb}", name="deploy_form", defaults={ "strategy":null, "elb":null })
      * @Template()
      */
     public function deployAction($strategy, $elb) 
@@ -32,4 +32,77 @@ class DeployController extends Controller
         return array( 'data' => $data );
 
     }//deploy
+
+
+    /**
+     * @Route("/", name="deploy_cf" )
+     * @Template()
+     */
+    public function cfAction(Request $r)
+    {
+        if ($r->get('deploy_strategy') != 'build' ) {
+            throw new \Exception('Not the stretegy that I like');
+        }
+
+        $jenkins_build = (int)    $r->get('jenkins_build');
+        $hg_revision   = (string) $r->get('hg_rev');
+        $instance_type = (string) $r->get('instance_type');
+        $instance_num  = (int)    $r->get('instance_number');
+        $access_key    = (string) $r->get('aws_key');
+        $access_pass   = (string) $r->get('aws_pass');
+        
+        $stack_name    = 'peazie-web-' . $jenkins_build . '-' . substr( $hg_revision, 0, 6 );
+
+        $stack_config = array(
+            'StackName'   => $stack_name,
+            'TemplateURL' => 'https://s3-us-west-1.amazonaws.com/deploy.peazie.io/cf/peazie_web_autoscale.json',
+            'DisableRollback'  => true,
+
+            'Parameters'  => array(
+                array(
+                    'ParameterKey'   => 'HgBuild',
+                    'ParameterValue' => $jenkins_build,
+                ),
+                array(
+                    'ParameterKey'   => 'HgRev',
+                    'ParameterValue' => $hg_revision,
+                ),
+                array(
+                    'ParameterKey'   => 'NumberOfInstances',
+                    'ParameterValue' => $instance_num,
+                ),
+                array(
+                    'ParameterKey'   => 'InstanceType',
+                    'ParameterValue' => $instance_type,
+                )
+            ),
+            'Tags' => array(
+                array(
+                    'Key'   => 'Name',
+                    'Value' => 'autoscale prod ' . $jenkins_build . ' ' . substr( $hg_revision, 0, 4 ),
+                ),
+                array(
+                    'Key'   => 'brand',
+                    'Value' => 'peazie',
+                ),
+                array(
+                    'Key'   => 'jenkins_build',
+                    'Value' => $jenkins_build,
+                ),
+                array(
+                    'Key'   => 'hg_revision',
+                    'Value' => $hg_revision,
+                ),
+            ),
+        );
+
+
+        //$cf = $this->container->get('peazie.helper.aws')->getService('cloudformation');
+        //$result = $cf->createStack($stack_config);
+        $result['StackId'] = "arn:aws:cloudformation:us-west-1:868034933375:stack/peazie-web-552-4b00e6/9ca54110-2f03-11e3-ae7b-506cf9733096";
+        //$data = array_merge($result->toArray(), $stack_config); 
+        $data = array_merge($result, $stack_config); 
+
+        return array( 'data' => $data );
+    }//cfAction
 }

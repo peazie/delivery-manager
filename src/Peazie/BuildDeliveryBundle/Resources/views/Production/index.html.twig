@@ -30,9 +30,9 @@
                         <td>
                             {% for i in lb.Instances %}
                                 {% if i.State == 'InService' %}
-                                    <a href="{{ path('prod_instance_detail', { 'instance_id': i.InstanceId }) }} " class="label label-success">{{ i.InstanceId }}</a>
+                                    <a href="{{ path('prod_instance_detail', { 'instance_id': i.InstanceId }) }}" class="label label-success">{{ i.InstanceId }}</a>
                                 {% else %}
-                                    <a href="#" class="label label-danger">{{ i.InstanceId }}</a>
+                                    <a href="{{ path('prod_instance_detail', { 'instance_id': i.InstanceId }) }}" class="label label-danger">{{ i.InstanceId }}</a>
                                 {% endif %}
                             {% endfor %}
                         </td>
@@ -101,7 +101,7 @@
 </script>
 
 <script>
-var deploy_link = "{{ path('prod_deploy') }}";
+var deploy_link = "{{ path('deploy_form') }}";
 var data = {};
 
 $('.link-deploy').click( function() {

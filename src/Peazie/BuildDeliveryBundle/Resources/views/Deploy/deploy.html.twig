@@ -11,24 +11,41 @@
 
     <div class="row">
         <div class="col-md-8">
-        <form role="form">
+        <form role="form" method="POST" action="{{ path('deploy_cf') }}">
             <div class="form-group">
                 <label for="strategyField">Deployment Strategy</label>
                 <input type="text" class="form-control" id="strategyField" value="{{ data.DeployStrategy }}" disabled>
+                <input type="hidden" name="deploy_strategy" value="{{ data.DeployStrategy }}">
+            </div>
+
+            <div class="form-group">
+                <label for="jenkinsBuildField">Jenkins Build Number</label>
+                <input type="text" class="form-control" id="jenkinsBuildField" name="jenkins_build" placeholder="123">
+            </div>
+
+            <div class="form-group">
+                <label for="hgRevField">Mercurial Revision</label>
+                <input type="text" class="form-control" id="hgRevField" name="hg_rev" placeholder="a1b2c3d4e5">
             </div>
 
             <div class="form-group">
                 <label for="instanceTypeField">Instance Type</label>
-                <input type="text" class="form-control" id="instanceTypeField" value="m1.medium">
+                <input type="text" class="form-control" id="instanceTypeField" name="instance_type" value="m1.medium">
             </div>
+
             <div class="form-group">
                 <label for="instanceNumberField">Number of Instances</label>
-                <input type="number" class="form-control" id="instanceNumberField" value="2">
+                <input type="number" class="form-control" id="instanceNumberField" name="instance_number" value="2">
             </div>
 
             <div class="form-group">
                 <label for="authorizationKeyField">Authorization Key</label>
-                <input type="password" class="form-control" id="authorizationKeyField" placeholder="something">
+                <input type="password" class="form-control" id="authorizationKeyField" name="aws_key" placeholder="awsKey">
+            </div>
+
+            <div class="form-group">
+                <label for="authorizationPassField">Authorization Pass</label>
+                <input type="password" class="form-control" id="authorizationPassField" name="aws_pass" placeholder="awsPass">
             </div>
 
             <div class="checkbox">
