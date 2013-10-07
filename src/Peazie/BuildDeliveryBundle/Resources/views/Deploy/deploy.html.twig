@@ -19,18 +19,23 @@
             </div>
 
             <div class="form-group">
-                <label for="jenkinsBuildField">Jenkins Build Number</label>
-                <input type="text" class="form-control" id="jenkinsBuildField" name="jenkins_build" placeholder="123">
+                <label for="jenkinsBuildField">Last Stable Build #</label>
+                <input type="text" class="form-control" id="jenkinsBuildField" name="jenkins_build" value="{{ data.JenkinsBuild }}">
             </div>
 
             <div class="form-group">
                 <label for="hgRevField">Mercurial Revision</label>
-                <input type="text" class="form-control" id="hgRevField" name="hg_rev" placeholder="a1b2c3d4e5">
+                <input type="text" class="form-control" id="hgRevField" name="hg_rev" value="{{ data.HgRevision }}">
             </div>
 
             <div class="form-group">
                 <label for="instanceTypeField">Instance Type</label>
-                <input type="text" class="form-control" id="instanceTypeField" name="instance_type" value="m1.medium">
+                <select class="form-control" id="instanceTypeField" name="instance_type">
+                    <option value="t1.micro">t1.micro</option>
+                    <option value="m1.small">m1.small</option>
+                    <option value="m1.medium" selected="selected">m1.medium</option>
+                    <option value="m1.small">m1.large</option>
+                </select>
             </div>
 
             <div class="form-group">

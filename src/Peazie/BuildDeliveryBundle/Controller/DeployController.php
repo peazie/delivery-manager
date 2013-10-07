@@ -5,6 +5,7 @@ use Aws\Common\Aws;
 use Aws\Ec2\Ec2Client;
 use Aws\ElasticLoadBalancing\ElasticLoadBalancingClient;
 
+use Guzzle\Http\Client;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -26,8 +27,41 @@ class DeployController extends Controller
             throw new \Exception('Required parameters cannot be null');
         }
 
+        $cache  = $this->get('delivery.cache');
+        $params = $this->container->getParameter('jenkins');
+        $client = new Client($params['base_url']);
+
+        $builds = null;
+        if( !$builds = $cache->get('build-list') ) {
+
+            $request = $client->get( '/job/PeazieCM-Staging-Deploy/api/json', array(), array( 
+                    'auth' => array( 'auth' => $params['user'], $params['password'] )
+                )
+            );
+
+            $response = $request->send();
+            $builds = $response->json();
+
+            $cache->set( 'build-list', $builds, 3*60 );
+        }
+
+        if( !$lastBuildResults = $cache->get('build-list-' . $builds['lastStableBuild']['number'] ) ) {
+
+            $lastBuildRequest = $client->get( $builds['lastStableBuild']['url'] . 'api/json', array(), array( 
+                    'auth' => array( 'auth' => $params['user'], $params['password'] )
+                )
+            );
+
+            $lastBuildResponse = $lastBuildRequest->send();
+            $lastBuildResults  = $lastBuildResponse->json();
+
+            $cache->set( 'build-list-' . $builds['lastStableBuild']['number'], $lastBuildResults, 3*60 );
+        }
+
         $data['LoadBalancerName' ] = $elb;
         $data['DeployStrategy']    = $strategy;
+        $data['JenkinsBuild']      = $lastBuildResults['number'];
+        $data['HgRevision']        = $lastBuildResults['actions'][1]['mercurialNodeName'];
 
         return array( 'data' => $data );
 
@@ -41,7 +75,7 @@ class DeployController extends Controller
     public function cfAction(Request $r)
     {
         if ($r->get('deploy_strategy') != 'build' ) {
-            throw new \Exception('Not the stretegy that I like');
+            return $this->redirect( $this->generateUrl('prod_index') );
         }
 
         $jenkins_build = (int)    $r->get('jenkins_build');
@@ -97,11 +131,12 @@ class DeployController extends Controller
         );
 
 
-        //$cf = $this->container->get('peazie.helper.aws')->getService('cloudformation');
-        //$result = $cf->createStack($stack_config);
-        $result['StackId'] = "arn:aws:cloudformation:us-west-1:868034933375:stack/peazie-web-552-4b00e6/9ca54110-2f03-11e3-ae7b-506cf9733096";
-        //$data = array_merge($result->toArray(), $stack_config); 
-        $data = array_merge($result, $stack_config); 
+        $cf = $this->container->get('peazie.helper.aws')->getService('cloudformation');
+        $result = $cf->createStack($stack_config);
+        $data = array_merge($result->toArray(), $stack_config); 
+
+        //$result['StackId'] = "arn:aws:cloudformation:us-west-1:868034933375:stack/peazie-web-552-4b00e6/9ca54110-2f03-11e3-ae7b-506cf9733096";
+        //$data = array_merge($result, $stack_config); 
 
         return array( 'data' => $data );
     }//cfAction
