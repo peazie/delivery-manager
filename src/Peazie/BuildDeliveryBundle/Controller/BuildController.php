@@ -94,7 +94,7 @@ class BuildController extends Controller
             $response = $request->send();
             $data = $response->json();
 
-            $cache->set( 'build-detail-' . $build_number , $data, 3*60*60 );
+            $cache->set( 'build-detail-' . $build_number , $data, 7*24*60*60 );
         }
 
         return array( 
