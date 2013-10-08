@@ -14,4 +14,4 @@ services:
 
     peazie.helper.aws:
         class: Peazie\BuildDeliveryBundle\Helpers\AwsHelper
-        arguments: [ %aws% ]
+        arguments: [ '@service_container', %aws% ]

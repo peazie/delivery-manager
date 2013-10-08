@@ -27,11 +27,13 @@ class ProductionController extends Controller
     public function indexAction(Request $r)
     {
         $group_instances = array();
+
         $groups = array();
         $elbs   = array();
 
-        $elbs   = static::getElbs();
-        $groups = static::getAutoScaleGroups();
+        $aws    = $this->container->get('peazie.helper.aws');
+        $groups = $aws->getAutoScaleGroups();
+        $elbs   = $aws->getElbs();
 
         if( count($groups) > 0 && is_array($groups ) ) {
             foreach($groups as $glb) {
@@ -44,7 +46,7 @@ class ProductionController extends Controller
         }
 
         foreach( $elbs as $lb ) {
-            $instances  = static::getElbInstances($lb);
+            $instances  = $aws->getElbInstances($lb);
 
             $row = array();
             $row['LoadBalancerName'] = $lb;
@@ -78,103 +80,11 @@ class ProductionController extends Controller
             throw new \Exception("Instance ID is missing. WTF?");
         }
 
-        $data = static::getInstanceDetail($instance_id);
+        $data = $this->container->get('peazie.helper.aws')->getInstanceDetail($instance_id);
 
         return array( 'data' => $data['Reservations'][0]['Instances'][0] );
 
     }//instanceDetailAction
 
-
-    protected function getElbs() {
-        $params = $this->container->getParameter('aws');
-        return $params['available_elbs'];
-    }//getElbs
-
-
-    protected function getElbDetails($elb_names = null) 
-    {
-        if( empty($elb_names) || !is_array($elb_names) ) {
-            $elb_config = $elb_names;
-        } else {
-            $params = $this->container->getParameter('aws');
-            $elb_config = $params['available_elbs'];
-        }
-
-        $cache = $this->get('delivery.cache');
-        if( !$data = $cache->get('elbs-list') ) {
-            $elb  = $this->container->get('peazie.helper.aws')->getService('elasticloadbalancing');
-            $elbs = $elb->describeLoadBalancers(array('LoadBalancerNames' => $elb_config));
-            $data = $elbs->toArray();
-            $cache->set( 'elbs-list', $data, 60 );
-        }
-
-        return $data;
-    }//getElbDetails
-
-
-    protected function getElbInstances($elb_name = null) {
-        if( empty($elb_name) ) {
-            throw new \Exception("No configuration supplied. Please try again");
-        }
-
-        $cache = $this->get('delivery.cache');
-
-        if( !$data = $cache->get('elb-instances-' . $elb_name ) ) {
-            $elb  = $this->container->get('peazie.helper.aws')->getService('elasticloadbalancing');
-            $instances = $elb->describeInstanceHealth(array( 'LoadBalancerName' => (string) $elb_name ) );
-
-            $data = $instances->toArray();
-            $cache->set( 'elb-instances-' . $elb_name, $data, 30 );
-        }
-
-        return $data;
-    }//getElbInstances
-
-    protected function getAutoScaleGroups() {
-
-        $cache = $this->get('delivery.cache');
-
-        if( !$data = $cache->get( 'autoscale-groups' ) ) {
-            $as     = $this->container->get('peazie.helper.aws')->getService('autoscaling');
-            $groups = $as->DescribeAutoScalingGroups()->toArray();
-
-            foreach( $groups['AutoScalingGroups'] as $g ) {
-                foreach( $g['LoadBalancerNames'] as $l ) {
-                    $data[ $l ][] = $g;
-                }
-            }
-            $cache->set( 'autoscale-groups', $data, 5*60 );
-        }
-
-        return $data;
-    }//getElbInstances
-
-    protected function getInstanceDetail($instance_id=null)
-    {
-        if( is_null($instance_id) ) {
-            throw new \Exception("Instance ID is missing. WTF?");
-        }
-
-        if( is_string($instance_id) ) {
-            $config = array( 'InstanceIds' => array($instance_id) );
-        }
-
-        if( is_array( $instance_id) ) {
-            $config = array( 'InstanceIds' => $instance_id );
-        }
-
-        $cache = $this->get('delivery.cache');
-
-        if( !$data = $cache->get('instance-detail-' . md5($instance_id) ) ) {
-
-            $ec2       = $this->container->get('peazie.helper.aws')->getService('ec2');
-            $instances = $ec2->describeInstances($config);
-            $data      = $instances->toArray();
-
-            $cache->set( 'instance-detail-' . md5($instance_id), $data, 30*30 );
-        }
-
-        return $data;
-    }//getInstanceDetail
 
 }//ProductionController
