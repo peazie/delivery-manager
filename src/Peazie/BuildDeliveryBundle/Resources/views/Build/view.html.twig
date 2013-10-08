@@ -1,0 +1,42 @@
+{% extends 'BuildDeliveryBundle::default.html.twig' %}
+
+{% block content %}
+<!-- Begin page content -->
+<div class="container">
+    <div class="page-header">
+        <h3><span class="glyphicon glyphicon-list"></span> Build <span class="text-info">#{{ build_number }}</span> commits</h3>
+    </div>
+
+    <div class="row">
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <b>Commits</b>
+            </div>
+
+            <table class="table">
+            <thead>
+                <tr>
+                    <th>Rev</th> <th>Message</th> <th>Committer</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for c in data.changeSet.items %}
+                <tr>
+                    <td><a href="https://bitbucket.org/peazie/dreadful-tiger/commits/">{{ c.node|truncate(6) }}</a></td>
+                    <td>{{ c.msg|truncate(55) }}</td>
+                    <td>{{ c.author.fullName|truncate(10) }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+            </table>
+
+        </div><!-- commit panel -->
+
+    </div><!-- row -->
+
+</div><!-- container -->
+{% endblock content %}
+
+
+

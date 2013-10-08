@@ -4,66 +4,68 @@
 <!-- Begin page content -->
 <div class="container">
     <div class="page-header">
-        <h1>Build Delivery</h1>
+        <h2><span class="glyphicon glyphicon-th"></span> Build Delivery</h2>
     </div>
 
     <div class="row">
+    <div class="col-md-6">
+
+        <p><a href="#" class="btn btn-block btn-danger">New Build</a></p>
+
         <div class="panel panel-success">
             <div class="panel-heading">
                 <b>Last Good Build</b>
             </div>
-            <div class="panel-body">
-                <table class="table">
-                <thead>
-                    <tr>
-                        <th>Build #</th>
-                        <th>Deploy to</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><h3 style="margin: 0;"><span class="label label-success">{{ data.lastStableBuild.number }}</span></h3></td>
-                        <td>
-                            <a href="{{ path('build_test', { 'build_number': data.lastStableBuild.number }) }}" class="btn btn-warning btn-sm">Test</a>
-                            <a href="{{ path('build_production', { 'build_number': data.lastStableBuild.number }) }}" class="btn btn-danger btn-sm">Production</a>
-                        </td>
-                    </tr>
-                </tbody>
-                </table>
-            </div>
-        </div>
+
+            <table class="table">
+            <thead>
+                <tr>
+                    <th>Build #</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><h3 style="margin: 0;"><span class="label label-success">{{ data.lastStableBuild.number }}</span></h3></td>
+                    <td>
+                        <a href="{{ path('build_view', { 'build_number': data.lastStableBuild.number }) }}" class="btn btn-primary btn-sm">Details</a>
+                    </td>
+                </tr>
+            </tbody>
+            </table>
+
+        </div><!-- panel -->
     </div>
+    </div><!-- row -->
 
     <div class="row">
+    <div class="col-md-6">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <b>Old Builds</b>
             </div>
 
-            <div class="panel-body">
+            <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Build #</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for b in data.builds %}
+                <tr>
+                <td>{{ b.number }}</td>
+                    <td>
+                        <a href="{{ path('build_view', { 'build_number': data.lastStableBuild.number }) }}" class="btn btn-default btn-xs">Details</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            </table>
 
-                <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Build #</th>
-                        <th>Deploy to</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for b in data.builds %}
-                    <tr>
-                    <td>{{ b.number }}</td>
-                        <td>
-                            <a href="{{ path('build_test', { 'build_number': data.lastStableBuild.number }) }}" class="btn btn-warning btn-xs">Test</a>
-                            <a href="{{ path('build_production', { 'build_number': data.lastStableBuild.number }) }}" class="btn btn-danger btn-xs">Production</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-                </table>
-
-            </div><!-- panel-body -->
         </div><!-- panel -->
+    </div>
     </div><!-- row -->
 
 {% endblock content %}

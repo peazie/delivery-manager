@@ -1,0 +1,20 @@
+{% extends 'BuildDeliveryBundle::default.html.twig' %}
+
+{% block content %}
+<!-- Begin page content -->
+<div class="container">
+
+    <div class="page-header">
+        <h2><span class="glyphicon glyphicon-export"></span> New Build Triggered!</h2>
+    </div>
+
+    <div class="alert alert-info">
+        A new build has been triggered via Jenkins. So, please wait and go back to the 
+        <a href="{{ path('build_index') }}">builds</a> page to check for new build number
+        being published.
+    </div>
+
+    <a href="{{ path('build_index') }}" class="btn btn-primary">Go to Builds Page</a>
+
+</div><!-- container -->
+{% endblock content %}

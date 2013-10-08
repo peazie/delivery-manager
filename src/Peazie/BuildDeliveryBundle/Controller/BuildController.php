@@ -21,11 +21,11 @@ class BuildController extends Controller
     public function indexAction(Request $r)
     {
 
-        $cache = $this->get('delivery.cache');
+        $cache  = $this->get('delivery.cache');
+        $params = $this->container->getParameter('jenkins');
+        $client = new Client($params['base_url']);
 
         if( !$data = $cache->get('build-list') ) {
-            $params = $this->container->getParameter('jenkins');
-            $client = new Client($params['base_url']);
 
             $request = $client->get( '/job/PeazieCM-Staging-Deploy/api/json', array(), array( 
                     'auth' => array( 'auth' => $params['user'], $params['password'] )
@@ -35,49 +35,50 @@ class BuildController extends Controller
             $response = $request->send();
             $data = $response->json();
 
-            $cache->set( 'build-list', $data, 30*60 );
+            $cache->set( 'build-list', $data, 60 );
         }
+
+        $stable_build = $data['lastStableBuild'];
+        $build_request = $client->get( "/job/PeazieCM-Staging-Deploy/{$stable_build['number']}/api/json", array(), array( 
+                'auth' => array( 'auth' => $params['user'], $params['password'] )
+            )
+        );
+        $build_response = $build_request->send();
+        $build_data = $build_response->json();
+        $data['lastStableBuildInfo'] = $build_data;
 
         return array( 
             'data' => $data 
         );
     }//index
 
+
     /**
-     * @Route("/test/{build_number}", name="build_test")
+     * @Route("/new", name="build_new_go")
      * @Template()
      */
-    public function testAction($build_number)
+    public function newAction()
     {
-        $cache = $this->get('delivery.cache');
+        $params = $this->container->getParameter('jenkins');
+        $client = new Client($params['base_url']);
 
-        if( !$data = $cache->get('build-detail-' . $build_number ) ) {
-            $params = $this->container->getParameter('jenkins');
-            $client = new Client($params['base_url']);
-
-            $request = $client->get( "/job/PeazieCM-Staging-Deploy/{$build_number}/api/json", array(), array( 
-                    'auth' => array( 'auth' => $params['user'], $params['password'] )
-                )
-            );
-
-            $response = $request->send();
-            $data = $response->json();
-
-            $cache->set( 'build-detail-' . $build_number , $data, 3*60*60 );
-        }
-
-        return array( 
-            'build_number' => $build_number,
-            'data' => $data 
+        $request = $client->post( "/job/PeazieCM-Staging-Deploy/build", array(), array( 
+                'auth' => array( 'auth' => $params['user'], $params['password'] )
+            )
         );
 
+        $response = $request->send();
+        $data     = $response->getBody();
+
+        return array( 'data' => $data );
     }
 
+
     /**
-     * @Route("/production/{build_number}", name="build_production")
+     * @Route("/view/{build_number}", name="build_view")
      * @Template()
      */
-    public function prodAction($build_number)
+    public function viewAction($build_number)
     {
         $cache = $this->get('delivery.cache');
 
