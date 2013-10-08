@@ -54,7 +54,7 @@ class BuildController extends Controller
 
 
     /**
-     * @Route("/new", name="build_new_go")
+     * @Route("/new", name="build_new")
      * @Template()
      */
     public function newAction()
