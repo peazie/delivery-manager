@@ -8,10 +8,10 @@
     {% if as.Instances is defined %}
         {% for i in as.Instances %}
             {% if i.HealthStatus == 'Healthy' %}
-                <a href="{{ path('prod_instance_detail', { 'instance_id': i.InstanceId }) }}" class="btn btn-success">
+                <a href="{{ path('prod_instance_detail', { 'instance_id': i.InstanceId }) }}" class="btn btn-success btn-sm">
                     <span class="glyphicon glyphicon-ok"></span> {{ i.InstanceId }}</a>
             {% else %}
-                <a href="{{ path('prod_instance_detail', { 'instance_id': i.InstanceId }) }}" class="btn btn-danger">
+                <a href="{{ path('prod_instance_detail', { 'instance_id': i.InstanceId }) }}" class="btn btn-danger btn-sm">
                     <span class="glyphicon glyphicon-warning-sign"></span> {{ i.InstanceId }}</a>
             {% endif %}
         {% endfor %}

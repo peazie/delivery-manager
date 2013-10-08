@@ -9,47 +9,45 @@
 
     <div class="row">
 
-        <div class="panel panel-primary">
+        <div class="panel panel-info">
             <div class="panel-heading">
                 <h3 class="panel-title">Instance Details</h3>
             </div>
 
-            <div class="panel-body">
-                <table class="table">
-                <thead>
-                        <tr>
-                            <th width="25%">Key</th>
-                            <th>Value</th>
-                        </tr>
-                </thead>
-                <tbody>
+            <table class="table">
+            <thead>
                     <tr>
-                        <th class="text-info">Instance ID</th>
-                        <td>{{ data.InstanceId }}</td>
+                        <th width="25%">Key</th>
+                        <th>Value</th>
                     </tr>
-                    <tr>
-                        <th class="text-info">Instance Type</th>
-                        <td>{{ data.InstanceType }}</td>
-                    </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th class="text-info">Instance ID</th>
+                    <td>{{ data.InstanceId }}</td>
+                </tr>
+                <tr>
+                    <th class="text-info">Instance Type</th>
+                    <td>{{ data.InstanceType }}</td>
+                </tr>
 
-                    <tr>
-                        <th class="text-info">Public DNS</th>
-                        <td><a href="http://{{ data.PublicDnsName }}" target="_blank" >{{ data.PublicDnsName }}</a></td>
-                    </tr>
+                <tr>
+                    <th class="text-info">Public DNS</th>
+                    <td><a href="http://{{ data.PublicDnsName }}" target="_blank" >{{ data.PublicDnsName }}</a></td>
+                </tr>
 
-                    <tr>
-                        <th class="text-info">KeyPair</th>
-                        <td>{{ data.KeyName }}</td>
-                    </tr>
-                    <tr>
-                        <th class="text-info">Zone</th>
-                        <td>{{ data.Placement.AvailabilityZone }}</td>
-                    </tr>
-   
-                </tbody>
-                </table>
+                <tr>
+                    <th class="text-info">KeyPair</th>
+                    <td>{{ data.KeyName }}</td>
+                </tr>
+                <tr>
+                    <th class="text-info">Zone</th>
+                    <td>{{ data.Placement.AvailabilityZone }}</td>
+                </tr>
 
-            </div><!-- panel-body -->
+            </tbody>
+            </table>
+
         </div><!-- info panel -->
 
 
@@ -58,27 +56,25 @@
                 <h3 class="panel-title"><span class="glyphicon glyphicon-tags"></span> Instance Tags</h3>
             </div>
 
-            <div class="panel-body">
-                <table class="table">
-                <thead>
-                        <tr>
-                            <th width="25%">Key</th>
-                            <th>Value</th>
-                        </tr>
-                </thead>
-                <tbody>
-                {% if data.Tags is iterable %}
-                    {% for t in data.Tags %}
+            <table class="table">
+            <thead>
                     <tr>
-                        <th class="text-info">{{ t.Key }}</th>
-                        <td>{{ t.Value }}</td>
+                        <th width="25%">Key</th>
+                        <th>Value</th>
                     </tr>
-                    {% endfor %}
-                {% endif %}
-                </tbody>
-                </table>
+            </thead>
+            <tbody>
+            {% if data.Tags is iterable %}
+                {% for t in data.Tags %}
+                <tr>
+                    <th class="text-info">{{ t.Key }}</th>
+                    <td>{{ t.Value }}</td>
+                </tr>
+                {% endfor %}
+            {% endif %}
+            </tbody>
+            </table>
 
-            </div><!-- panel-body -->
         </div><!-- info panel -->
 
     </div><!-- row -->

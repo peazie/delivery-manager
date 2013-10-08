@@ -8,22 +8,21 @@
         <h2><span class="glyphicon glyphicon-cloud"></span> Production Standing</h2>
     </div>
 
-    <div class="row">
+    <p>Please find Peazie environments below, grouped by each environment's load balancer
+    name. Under each environment group are two main groups of instances:</p>
 
-        <p>Please find Peazie environments below, grouped by each environment's load balancer
-        name. Under each environment group are two main groups of instances:</p>
-
-        <dl class="dl-horizontal" style="margin-bottom: 2.5em;">
-            <dt>Standard Instances</dt>
+    <dl class="dl-horizontal" style="margin-bottom: 2.5em;">
+        <dt>Standard Instances</dt>
             <dd>Standard instances that are launched independently</dd>
 
-            <dt>AutoScale Instances</dt>
-            <dd>As the name implies, these are instances that are part of
-                an autoscale group<dd>
-        </dl>
+        <dt>AutoScale Instances</dt>
+            <dd>As the name implies, these are instances that are part of an autoscale group<dd>
+    </dl>
+
+    <div class="row">
 
         {% for lb in data %}
-            <div style="margin-bottom: 3.5em;">
+            <div class="col-lg-6" style="margin-bottom: 3.5em;">
             {{ include(
                 'BuildDeliveryBundle:Production:partial.panel.prod-groups.html.twig',
                 { 'loadBalancer': lb }
