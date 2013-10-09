@@ -17,13 +17,13 @@
             <table class="table">
             <thead>
                 <tr>
-                    <th>Rev</th> <th>Message</th> <th>Committer</th>
+                    <th>Hg Rev</th> <th>Message</th> <th>Committer</th>
                 </tr>
             </thead>
             <tbody>
             {% for c in data.changeSet.items %}
                 <tr>
-                    <td><a href="https://bitbucket.org/peazie/dreadful-tiger/commits/">{{ c.node|truncate(6) }}</a></td>
+                    <td><a href="https://bitbucket.org/peazie/dreadful-tiger/commits/">{{ c.node|truncate(10) }}</a></td>
                     <td>{{ c.msg|truncate(55) }}</td>
                     <td>{{ c.author.fullName|truncate(10) }}</td>
                 </tr>

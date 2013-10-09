@@ -34,7 +34,17 @@
 
                 <tr>
                     <th class="text-info">Public DNS</th>
-                    <td><a href="http://{{ data.PublicDnsName }}" target="_blank" >{{ data.PublicDnsName }}</a></td>
+                    <td><input type="text" disabled value="{{ data.PublicDnsName }}" size="45" /></td>
+                </tr>
+
+                <tr>
+                    <th class="text-info">Web</th>
+                    <td><a href="http://{{ data.PublicDnsName }}" target="_blank" >http://{{ data.PublicDnsName }}</a></td>
+                </tr>
+
+                <tr>
+                    <th class="text-info">RabbitMQ</th>
+                    <td><a href="http://{{ data.PublicDnsName }}:15672" target="_blank" >http://{{ data.PublicDnsName }}:15672</a></td>
                 </tr>
 
                 <tr>
