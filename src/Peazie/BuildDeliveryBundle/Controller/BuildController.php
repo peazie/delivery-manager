@@ -54,10 +54,10 @@ class BuildController extends Controller
 
 
     /**
-     * @Route("/new", name="build_new")
+     * @Route("/new/{new_build_number}", name="build_new")
      * @Template()
      */
-    public function newAction()
+    public function newAction($new_build_number)
     {
         $params = $this->container->getParameter('jenkins');
         $client = new Client($params['base_url']);
@@ -70,7 +70,10 @@ class BuildController extends Controller
         $response = $request->send();
         $data     = $response->getBody();
 
-        return array( 'data' => $data );
+	return array(
+	    'buildNumber' => $new_build_number,
+	    'data' => $data
+	);
     }
 
 

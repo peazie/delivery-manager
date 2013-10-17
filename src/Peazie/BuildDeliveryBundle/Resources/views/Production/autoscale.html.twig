@@ -1,0 +1,190 @@
+{% extends 'BuildDeliveryBundle::default.html.twig' %}
+
+{% block content %}
+<!-- Begin page content -->
+<div class="container">
+
+    <div class="page-header">
+        <h2><span class="glyphicon glyphicon-fullscreen"></span> AutoScale Group</h2>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+
+
+            <!-- AutoScale Details -->
+            <div class="panel panel-info">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Details</h3>
+                </div>
+
+                <table class="table">
+                <tbody>
+                    <tr>
+                        <th>Group Name</th>
+                        <td>{{ data.AsgGroup.AutoScalingGroupName }}</td>
+                    </tr>
+
+                    <tr>
+                        <th>Created</th>
+                        <td>{{ data.AsgGroup.CreatedTime }}</td>
+                    </tr>
+
+                    <tr>
+                        <th>Zones</th>
+                        <td>
+                        {% if data.AsgGroup.AvailabilityZones is iterable %}
+                            {% for az in data.AsgGroup.AvailabilityZones %}
+                                <span class="label label-warning">{{ az }}</span>
+                            {% endfor %}
+                        {% endif %}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>ELB</th>
+                        <td>
+                        {% if data.AsgGroup.LoadBalancerNames is iterable %}
+                            {% for lb in data.AsgGroup.LoadBalancerNames %}
+                                <span class="label label-primary">{{ lb }}</span>
+                            {% endfor %}
+                        {% endif %}
+                        </td>
+                    </tr>
+
+                </tbody>
+                </table>
+            </div><!-- panel-heading -->
+
+            <!-- Tags list -->
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h3 class="panel-title">ASG Tags</h3>
+                </div>
+
+                <table class="table">
+                {% if data.AsgGroup.Tags is defined %}
+                    {% for i in data.AsgGroup.Tags %}
+                    <tr>
+                        <td>
+                            <strong class="text-info">
+                                {{ i.Key }}
+                            </strong>
+                        </td>
+                        <td>
+                            {{ i.Value }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                {% endif %}
+                </table>
+
+            </div><!-- panel-heading -->
+
+
+
+            <!-- Instances list -->
+            <div class="panel panel-success">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Instances</h3>
+                </div>
+
+                <div class="panel-body">
+
+                {% if data.AsgGroup.Instances is defined %}
+                    {% for i in data.AsgGroup.Instances %}
+                        {% if i.HealthStatus == 'Healthy' %}
+                            <a href="{{ path('prod_instance_detail', { 'instance_id': i.InstanceId }) }}" class="btn btn-success btn-sm">
+                                <span class="glyphicon glyphicon-ok"></span> {{ i.InstanceId }}</a>
+                        {% else %}
+                            <a href="{{ path('prod_instance_detail', { 'instance_id': i.InstanceId }) }}" class="btn btn-danger btn-sm">
+                                <span class="glyphicon glyphicon-warning-sign"></span> {{ i.InstanceId }}</a>
+                        {% endif %}
+                    {% endfor %}
+                {% endif %}
+
+                </div><!-- panel-body -->
+            </div><!-- panel-heading -->
+
+
+            <!-- Action! -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Actions</h3>
+                </div>
+
+                <div class="panel-body">
+                    <a href="#" class="btn btn-default btn-sm kill-it">Kill it!</a>
+                </div><!-- panel-body -->
+            </div><!-- panel-heading -->
+
+
+
+        </div><!-- col -->
+
+    </div><!-- row -->
+</div><!-- container -->
+
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+<div class="modal-dialog">
+    <div class="modal-content">
+        <!-- content here -->
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+            <h3 class="modal-title">
+                <span class="glyphicon glyphicon-cloud-upload"></span> Seriously?!
+            </h3>
+        </div>
+
+        <div class="modal-body text-danger" style="text-align: center">
+            <p>You are about to <strong>DELETE THIS ENTIRE CLUSTER</strong>. Are you VERY SURE?</p>
+
+            <a href="{{ path('prod_stack_delete', { 'stack_name': data.CfStackName }) }}" class="btn btn-danger" id="link-deploy-proceed">
+                <span class="glyphicon glyphicon-thumbs-up"></span> Yes Please!
+            </a>
+        </div>
+
+        <div class="modal-footer">
+            <a href="#" class="btn btn-link" data-dismiss="modal">Cancel</a>
+        </div>
+
+    </div><!-- /.modal-content -->
+</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+{% endblock content %}
+
+{% block javascript %}
+<script id="deploy-dialog-content" type="text/html">
+{% raw %}
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3 class="modal-title">
+            <span class="glyphicon glyphicon-cloud-upload"></span> Deployment Confirmation
+        </h3>
+    </div>
+
+    <div class="modal-body" style="text-align: center">
+        <p>You are about to deploy <strong class="text-danger">new {{deployStrategy}}</strong> to <strong class="text-danger">{{loadBalancer}}</strong>. 
+        Confirm this action?</p>
+
+        <a href="{{ deployLink }}" class="btn btn-primary" id="link-deploy-proceed">
+            <span class="glyphicon glyphicon-thumbs-up"></span> Yes Please!
+        </a>
+    </div>
+
+    <div class="modal-footer">
+        <a href="#" class="btn btn-link" data-dismiss="modal">Cancel</a>
+    </div>
+{% endraw %}
+</script>
+
+<script>
+var deploy_link = "{{ path('deploy_form') }}";
+var data = {};
+
+$('.kill-it').click( function() {
+    $('#myModal').modal('toggle')
+});
+</script>
+{% endblock javascript %}

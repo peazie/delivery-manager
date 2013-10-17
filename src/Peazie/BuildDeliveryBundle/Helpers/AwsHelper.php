@@ -96,6 +96,92 @@ class AwsHelper
     }//getAutoScaleGroups
 
 
+    public function searchAutoScaleGroup($asg_name)
+    {
+
+	$cache = $this->container->get('delivery.cache');
+
+	if( !$data = $cache->get( 'autoscale-group-search-' . $asg_name ) ) {
+	    $as    = static::getService('autoscaling');
+	    $data  = $as->DescribeAutoScalingGroups( array( 'AutoScalingGroupNames' => array( $asg_name )) )->toArray();
+
+	    $cache->set( 'autoscale-group-search-' . $asg_name, $data, 3*60 );
+	}
+
+	return $data;
+    }//getAutoScaleGroups
+
+
+    public function getAutoScaleGroupTags($asg_name)
+    {
+	$cache = $this->container->get('delivery.cache');
+
+	if( !$data = $cache->get( 'autoscale-group-tags-' . $asg_name ) ) {
+	    $group = static::searchAutoScaleGroup( $asg_name );
+	    $data  = $group['AutoScalingGroups'][0]['Tags'];
+
+	    $cache->set( 'autoscale-group-tags-' . $asg_name, $data, 3*60 );
+	}
+
+	return $data;
+    }//getAutoScaleGroupTags
+
+
+    public function setAutoScaleGroupScaling($asg_name, $capacity, $direction="up", $cooldown = false)
+    {
+
+	$asg = static::getService('autoscaling');
+
+	$result = $asg->setDesiredCapacity(array(
+	    'AutoScalingGroupName' => $asg_name,
+	    'DesiredCapacity'      => $capacity,
+	    'HonorCooldown'        => $cooldown,
+	));
+
+	return $result;
+    }//getAutoScaleGroupTags
+
+
+    public function getAutoScaleGroupCfStackName($asg_name)
+    {
+	$cache = $this->container->get('delivery.cache');
+
+	if( !$data = $cache->get( 'autoscale-group-cf-stack-name-' . $asg_name ) ) {
+
+	    $tags  = static::getAutoScaleGroupTags($asg_name);
+
+	    foreach( $tags as $t ) {
+		if($t['Key'] == 'aws:cloudformation:stack-name' ) {
+		    $data = $t['Value'];
+		}
+	    }
+
+	    $cache->set( 'autoscale-group-cf-stack-name-' . $asg_name, $data, 3*60 );
+	}
+
+	return $data;
+
+    }//getAutoScaleGroupStackName
+
+    public function getCloudFormation($stack_name)
+    {
+	$cache = $this->container->get('delivery.cache');
+
+	if( !$data = $cache->get( 'autoscale-group-cf-stack-name-' . $asg_name ) ) {
+
+	    $tags  = static::getAutoScaleGroupTags($asg_name);
+
+	    foreach( $tags as $t ) {
+		if($t['Key'] == 'aws:cloudformation:stack-name' ) {
+		    $data = $t['Value'];
+		}
+	    }
+
+	    $cache->set( 'autoscale-group-cf-stack-name-' . $asg_name, $data, 3*60 );
+	}
+
+    }//getCloudFormation
+
     public function getElbInstances($elb_name = null) {
         if( empty($elb_name) ) {
             throw new \Exception("No configuration supplied. Please try again");

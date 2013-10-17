@@ -86,10 +86,6 @@ class DeployController extends Controller
         $access_key    = (string) $r->get('aws_key');
         $access_pass   = (string) $r->get('aws_pass');
 
-        if( trim($deploy_elb) == "peazie-prod" ) {
-            print "You are trying to deply to $deploy_elb"; die;
-        }
-
         $stack_name    = $deploy_elb . '-web-' . $jenkins_build . '-' . substr( $hg_revision, 0, 6 ) . '-' . substr( md5(time() ), 0, 6 );
 
         $stack_config = array(
@@ -122,7 +118,7 @@ class DeployController extends Controller
             'Tags' => array(
                 array(
                     'Key'   => 'Name',
-                    'Value' => 'autoscale prod ' . $jenkins_build . ' ' . substr( $hg_revision, 0, 6 ),
+		    'Value' => 'auto ' . $deploy_elb . ' ' . $jenkins_build . ' ' . substr( $hg_revision, 0, 6 ),
                 ),
                 array(
                     'Key'   => 'brand',

@@ -1,0 +1,20 @@
+{% extends 'BuildDeliveryBundle::default.html.twig' %}
+
+{% block content %}
+<!-- Begin page content -->
+<div class="container">
+
+    <div class="page-header">
+        <h2><span class="glyphicon glyphicon-cloud"></span> Production Standing</h2>
+    </div>
+
+    <div class="row">
+        {{ include(
+            'BuildDeliveryBundle:Production:partial.panel.prod-groups-autoscale-instances.html.twig',
+            { 'asGroup': data.AsgGroup }
+        ) }}
+    </div><!-- row -->
+
+</div><!-- container -->
+
+{% endblock content %}

@@ -14,7 +14,7 @@
         being published.
     </div>
 
-    <a href="{{ path('build_index') }}" class="btn btn-primary">Go to Builds Page</a>
+    <a href="{{ path('build_view', { "build_number": buildNumber }) }}" class="btn btn-primary">Go to Builds Page</a>
 
 </div><!-- container -->
 {% endblock content %}

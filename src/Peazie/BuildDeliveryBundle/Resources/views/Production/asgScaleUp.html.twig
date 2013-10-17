@@ -1,0 +1,24 @@
+{% extends 'BuildDeliveryBundle::default.html.twig' %}
+
+{% block content %}
+<!-- Begin page content -->
+<div class="container">
+
+    <div class="page-header">
+        <h2><span class="glyphicon glyphicon-export"></span> New AutoScale Config Triggered!</h2>
+    </div>
+
+    {% if data.error is not null %}
+
+    {% else %}
+        <div class="alert alert-info">
+            A new build has been triggered via AWS. So, please wait and go back to the 
+            <a href="{{ path('prod_index') }}">production</a> page to check for new build number
+            being published.
+        </div>
+    {% endif %}
+
+    <a href="{{ path('prod_index') }}" class="btn btn-primary">Go to Prod Page</a>
+
+</div><!-- container -->
+{% endblock content %}
