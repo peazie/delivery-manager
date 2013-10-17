@@ -70,10 +70,10 @@ class BuildController extends Controller
         $response = $request->send();
         $data     = $response->getBody();
 
-	return array(
-	    'buildNumber' => $new_build_number,
-	    'data' => $data
-	);
+        return array( 
+            'buildNumber' => $new_build_number,
+            'data' => $data 
+        );
     }
 
 
@@ -100,6 +100,7 @@ class BuildController extends Controller
             $cache->set( 'build-detail-' . $build_number , $data, 7*24*60*60 );
         }
 
+        //print '<pre>'; print_r($data); die;
         return array( 
             'build_number' => $build_number,
             'data' => $data 

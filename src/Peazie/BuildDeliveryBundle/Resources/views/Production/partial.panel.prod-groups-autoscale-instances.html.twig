@@ -1,18 +1,18 @@
 <div class="panel panel-success">
     <div class="panel-heading">
-	<h3 class="panel-title"><a href="{{ path('prod_asg_detail', { 'asg_name': as.AutoScalingGroupName } ) }}">
-	    AutoScale: {{ as.AutoScalingGroupName | truncate(32) }}</a>
-	    <a href="#" data-elb="{{ loadBalancer }}"  data-asg="{{ as.AutoScalingGroupName }}"
-		class="scale-me label label-warning pull-right" style="color: #593400;">
-		<span class="glyphicon glyphicon-fullscreen"></span> Scale</a>
-	</h3>
+        <h3 class="panel-title"><a href="{{ path('prod_asg_detail', { 'asg_name': as.AutoScalingGroupName } ) }}">
+            AutoScale: {{ as.AutoScalingGroupName | truncate(32) }}</a>
+            <a href="#" data-elb="{{ loadBalancer }}"  data-asg="{{ as.AutoScalingGroupName }}" 
+                class="scale-me label label-warning pull-right" style="color: #593400;">
+                <span class="glyphicon glyphicon-fullscreen"></span> Scale</a>
+        </h3>
     </div>
 
     <div class="panel-body" style="background-color: #f1faed;">
 
     {% if as.Instances is defined %}
         {% for i in as.Instances %}
-	    {% if i.LifecycleState == 'InService' %}
+            {% if i.LifecycleState == 'InService' %}
                 <a href="{{ path('prod_instance_detail', { 'instance_id': i.InstanceId }) }}" class="btn btn-success btn-sm">
                     <span class="glyphicon glyphicon-ok"></span> {{ i.InstanceId }}</a>
             {% else %}

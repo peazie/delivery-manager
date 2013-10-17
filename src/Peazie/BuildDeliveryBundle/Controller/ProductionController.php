@@ -76,24 +76,24 @@ class ProductionController extends Controller
      */
     public function autoscaleAction($asg_name)
     {
-	$aws = $this->container->get('peazie.helper.aws');
+        $aws = $this->container->get('peazie.helper.aws');
 
-	$asg_data = $aws->searchAutoScaleGroup( $asg_name );
-	$cf_stack = $aws->getAutoScaleGroupCfStackName( $asg_name );
+        $asg_data = $aws->searchAutoScaleGroup( $asg_name );
+        $cf_stack = $aws->getAutoScaleGroupCfStackName( $asg_name );
 
-	$cf_name =  null;
-	foreach($asg_data['AutoScalingGroups'][0]['Tags'] as $t) {
-	    if($t['Key'] == 'aws:cloudformation:stack-name' ) {
-		$cf_name = $t['Value'];
-	    }
-	}
+        $cf_name =  null;
+        foreach($asg_data['AutoScalingGroups'][0]['Tags'] as $t) {
+            if($t['Key'] == 'aws:cloudformation:stack-name' ) {
+                $cf_name = $t['Value'];
+            }
+        }
 
-	$data = array(
-	    'AsgGroup'    => $asg_data['AutoScalingGroups'][0],
-	    'CfStackName' => $cf_stack
-	);
+        $data = array( 
+            'AsgGroup'    => $asg_data['AutoScalingGroups'][0], 
+            'CfStackName' => $cf_stack
+        );
 
-	return array( 'data' => $data );
+        return array( 'data' => $data );
     }//cfAction
 
 
@@ -103,19 +103,19 @@ class ProductionController extends Controller
      */
     public function asgScaleUpAction($asg_name, $capacity)
     {
-	$aws    = $this->container->get('peazie.helper.aws');
-	$tags   = $aws->getAutoScaleGroupTags($asg_name);
+        $aws    = $this->container->get('peazie.helper.aws');
+        $tags   = $aws->getAutoScaleGroupTags($asg_name);
 
-	try {
-	    $result = $aws->setAutoScaleGroupScaling($asg_name, $capacity, "up");
-	} catch (Exception $e ) {
-	    $data['error'] = $e->getMessage();
-	}
+        try {
+            $result = $aws->setAutoScaleGroupScaling($asg_name, $capacity, "up");
+        } catch (Exception $e ) {
+            $data['error'] = $e->getMessage();
+        }
 
-	$data['asg_name'] = $asg_name;
-	$data['capacity'] = $capacity;
+        $data['asg_name'] = $asg_name;
+        $data['capacity'] = $capacity;
 
-	return array( 'data' => $data );
+        return array( 'data' => $data );
     }//cfAction
 
 
@@ -126,8 +126,8 @@ class ProductionController extends Controller
     public function cfDeleteAction($stack_name)
     {
 
-	print "Delete $stack_name!";
-	die;
+        print "Delete $stack_name!";
+        die;
     }//cfDelete
 
 

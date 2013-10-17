@@ -19,7 +19,7 @@
             {% for as in loadBalancer.AutoScaleGroups %}
             {{ include(
                 'BuildDeliveryBundle:Production:partial.panel.prod-groups-autoscale-instances.html.twig',
-		{ 'asGroup': as, 'loadBalancer': loadBalancer.LoadBalancerName }
+                { 'asGroup': as, 'loadBalancer': loadBalancer.LoadBalancerName }
             ) }}
             {% endfor %} 
         {% endif %}
@@ -33,7 +33,7 @@
             </button>
             <ul class="dropdown-menu" role="menu">
                 <li><a href="#" class="link-deploy" data-elb="{{ lb.LoadBalancerName }}" data-strategy="build">New Build</a></li>
-		<li><a href="#" class="link-deploy" data-elb="{{ lb.LoadBalancerName }}" data-strategy="clone">Cloned Instances</a></li>
+                <li><a href="#" class="link-deploy" data-elb="{{ lb.LoadBalancerName }}" data-strategy="clone">Cloned Instances</a></li>
             </ul>
         </div>
         <!-- deploy button -->

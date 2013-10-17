@@ -96,89 +96,89 @@ class AwsHelper
     }//getAutoScaleGroups
 
 
-    public function searchAutoScaleGroup($asg_name)
+    public function searchAutoScaleGroup($asg_name) 
     {
 
-	$cache = $this->container->get('delivery.cache');
+        $cache = $this->container->get('delivery.cache');
 
-	if( !$data = $cache->get( 'autoscale-group-search-' . $asg_name ) ) {
-	    $as    = static::getService('autoscaling');
-	    $data  = $as->DescribeAutoScalingGroups( array( 'AutoScalingGroupNames' => array( $asg_name )) )->toArray();
+        if( !$data = $cache->get( 'autoscale-group-search-' . $asg_name ) ) {
+            $as    = static::getService('autoscaling');
+            $data  = $as->DescribeAutoScalingGroups( array( 'AutoScalingGroupNames' => array( $asg_name )) )->toArray();
 
-	    $cache->set( 'autoscale-group-search-' . $asg_name, $data, 3*60 );
-	}
+            $cache->set( 'autoscale-group-search-' . $asg_name, $data, 3*60 );
+        }
 
-	return $data;
+        return $data;
     }//getAutoScaleGroups
 
 
     public function getAutoScaleGroupTags($asg_name)
     {
-	$cache = $this->container->get('delivery.cache');
+        $cache = $this->container->get('delivery.cache');
 
-	if( !$data = $cache->get( 'autoscale-group-tags-' . $asg_name ) ) {
-	    $group = static::searchAutoScaleGroup( $asg_name );
-	    $data  = $group['AutoScalingGroups'][0]['Tags'];
+        if( !$data = $cache->get( 'autoscale-group-tags-' . $asg_name ) ) {
+            $group = static::searchAutoScaleGroup( $asg_name );
+            $data  = $group['AutoScalingGroups'][0]['Tags'];
 
-	    $cache->set( 'autoscale-group-tags-' . $asg_name, $data, 3*60 );
-	}
+            $cache->set( 'autoscale-group-tags-' . $asg_name, $data, 3*60 );
+        }
 
-	return $data;
+        return $data;
     }//getAutoScaleGroupTags
 
 
     public function setAutoScaleGroupScaling($asg_name, $capacity, $direction="up", $cooldown = false)
     {
 
-	$asg = static::getService('autoscaling');
+        $asg = static::getService('autoscaling');
 
-	$result = $asg->setDesiredCapacity(array(
-	    'AutoScalingGroupName' => $asg_name,
-	    'DesiredCapacity'      => $capacity,
-	    'HonorCooldown'        => $cooldown,
-	));
+        $result = $asg->setDesiredCapacity(array(
+            'AutoScalingGroupName' => $asg_name,
+            'DesiredCapacity'      => $capacity,
+            'HonorCooldown'        => $cooldown,
+        ));
 
-	return $result;
+        return $result;
     }//getAutoScaleGroupTags
 
 
     public function getAutoScaleGroupCfStackName($asg_name)
     {
-	$cache = $this->container->get('delivery.cache');
+        $cache = $this->container->get('delivery.cache');
 
-	if( !$data = $cache->get( 'autoscale-group-cf-stack-name-' . $asg_name ) ) {
+        if( !$data = $cache->get( 'autoscale-group-cf-stack-name-' . $asg_name ) ) {
 
-	    $tags  = static::getAutoScaleGroupTags($asg_name);
+            $tags  = static::getAutoScaleGroupTags($asg_name);
 
-	    foreach( $tags as $t ) {
-		if($t['Key'] == 'aws:cloudformation:stack-name' ) {
-		    $data = $t['Value'];
-		}
-	    }
+            foreach( $tags as $t ) {
+                if($t['Key'] == 'aws:cloudformation:stack-name' ) {
+                    $data = $t['Value'];
+                }
+            }
 
-	    $cache->set( 'autoscale-group-cf-stack-name-' . $asg_name, $data, 3*60 );
-	}
+            $cache->set( 'autoscale-group-cf-stack-name-' . $asg_name, $data, 3*60 );
+        }
 
-	return $data;
+        return $data;
 
     }//getAutoScaleGroupStackName
 
     public function getCloudFormation($stack_name)
     {
-	$cache = $this->container->get('delivery.cache');
+        $cache = $this->container->get('delivery.cache');
 
-	if( !$data = $cache->get( 'autoscale-group-cf-stack-name-' . $asg_name ) ) {
+        if( !$data = $cache->get( 'autoscale-group-cf-stack-name-' . $asg_name ) ) {
 
-	    $tags  = static::getAutoScaleGroupTags($asg_name);
+            $tags  = static::getAutoScaleGroupTags($asg_name);
 
-	    foreach( $tags as $t ) {
-		if($t['Key'] == 'aws:cloudformation:stack-name' ) {
-		    $data = $t['Value'];
-		}
-	    }
+            foreach( $tags as $t ) {
+                if($t['Key'] == 'aws:cloudformation:stack-name' ) {
+                    $data = $t['Value'];
+                }
+            }
 
-	    $cache->set( 'autoscale-group-cf-stack-name-' . $asg_name, $data, 3*60 );
-	}
+            $cache->set( 'autoscale-group-cf-stack-name-' . $asg_name, $data, 3*60 );
+        }
 
     }//getCloudFormation
 

@@ -118,7 +118,7 @@ class DeployController extends Controller
             'Tags' => array(
                 array(
                     'Key'   => 'Name',
-		    'Value' => 'auto ' . $deploy_elb . ' ' . $jenkins_build . ' ' . substr( $hg_revision, 0, 6 ),
+                    'Value' => 'auto ' . $deploy_elb . ' ' . $jenkins_build . ' ' . substr( $hg_revision, 0, 6 ),
                 ),
                 array(
                     'Key'   => 'brand',
