@@ -1,0 +1,43 @@
+<div class="page-header">
+    <h4>{{ column_title }}</h4>
+</div>
+
+<div class="panel panel-{% if color is defined %}{{ color }}{% else %}default{% endif %}">
+    <div class="panel-heading">
+        <span class="glyphicon glyphicon-compressed"></span> <b>Builds</b>
+    </div>
+
+    <table class="table">
+    <tbody>
+        {% for b in data.builds %}
+        <tr>
+            {% if b.number == data.lastStableBuild.number %}
+                <td width="100"><a href="{{ path('build_view', { 'build_number': b.number }) }}" class="btn btn-success btn-xs">Build <strong>#{{ b.number }}</strong></a></td>
+            {% else %}
+                <td width="100"><a href="{{ path('build_view', { 'build_number': b.number }) }}" class="btn btn-default btn-xs">Build <strong>#{{ b.number }}</strong></a></td>
+            {% endif %}
+            <td>
+                <!-- deploy button -->
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default btn-danger btn-xs">Deploy to</button>
+                    <button type="button" class="btn btn-default btn-danger btn-xs dropdown-toggle" data-toggle="dropdown">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu" role="menu">
+                        {% if deploy is defined %}
+                            {% for d in deploy %}
+                                <li><a href="#" class="link-deploy">{{ d }}</a></li>
+                            {% endfor %}
+                        {% endif %}
+                    </ul>
+                </div>
+                <!-- deploy button -->
+
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+    </table>
+
+</div><!-- panel -->
+
